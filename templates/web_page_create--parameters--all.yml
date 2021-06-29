@@ -1,0 +1,103 @@
+# DESCRIPTION:  Template for the parameter-file used by create_web_page.py, 
+#               showing all parameters and example values.
+# 
+# * The parameter-file is in YAML format, and must conform to standard YAML syntax rules.
+#
+# * This template shows all of the keys defined for the parameter-file.
+# * The section "required:" is required.  The other sections are optional, and their keys.
+#
+# * The system documentation has additional info on its: installation, use, design 
+#   and implementation (code).
+#
+# * YAML references
+#   * YAML Syntax: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#   * YAML Tutorial: https://www.tutorialspoint.com/yaml/index.htm
+#   * How to specify multi-line values, e.g., when specifying HTML
+#     * https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
+#
+# MIT License, Copyright (c) 2021-present Jim Yuill
+#
+
+# Specifies start of YAML data:
+---
+# Required parameters
+required:
+  # Parameter-file version
+  version: "1.0"
+  # Full path for the input Word HTML-file
+  input_html_path: D:\Documents\Professional-projects\My-web-site-development\Word-to-HTML\automation-dev\testing\test-Word-files\test-Word-files\tests-for-create_web_page_py\WordWebNav--Word-HTML\all-primary-Word-features.html
+  # Full path for the directory for the output WordWebNav HTML-file
+  output_directory_path: D:\Documents\Professional-projects\My-web-site-development\Word-to-HTML\automation-dev\testing\test-Word-files\test-Word-files\tests-for-create_web_page_py\WordWebNav--HTML
+  # URL for the directory containing WordWebNav's CSS file and Javascript file
+  scripts_directory_url: D:\Documents\Professional-projects\My-web-site-development\Word-to-HTML\WordWebNav\word_web_nav\assets
+
+
+# Specifies contents for the HTML head-section (<head>...</head>), in the output web-page. (Optional)
+html_head:
+  # The web-page's HTML title
+  title: Web-Page Created By WordWebNav, Using a Template Parameter-File
+  # The web-page's HTML description
+  # * The value is in quotes because the string contains a ":"
+  description: "The template parameter-file used is: web_page_create--parameters--testing.yml"
+  # User-written HTML, to be included in the HTML head-section, just before the closing-tag "</head>".
+  additional_html: <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32" />
+
+
+# Specifies contents for the output web-page's header section. (Optional)
+# * The "header" is a line of text, at the top of the web page. 
+#   (It's different than the HTML head-section.)
+# * The header is formatted as an HTML table with one row, and no border-lines.
+# * The row has a table-cell for each key "- section:".  The cells are of equal width.
+web_page_header:
+  # First table-cell 
+  - section:
+      # * Cell contents
+      # * Permissible keys under "contents:" are: breadcrumbs, hyperlink, html, text, empty
+      contents:
+        # Navigation breadcrumbs, e.g.,  Home / Car-Repair / Brakes
+        breadcrumbs:
+          - hyperlink:
+              text: Home
+              url: http://jimyuill.org
+          - hyperlink:
+              text: Car-Repair
+              url: http://jimyuill.org/car-repair
+          - hyperlink:
+              text: Brakes 
+              url: http://jimyuill.org/cars/brakes
+      # * Alignment of the contents within the cell
+      # * Permissible values are: left, right, center, justify
+      contents_alignment: left
+  # Second table-cell
+  - section:
+      contents:
+        # Hyperlink, e.g., link to the Comments section at the end of the document text
+        hyperlink:
+          text: Comments 
+          url: "#word_web_nav_document_text_trailer"
+      contents_alignment: center
+  # Third table-cell
+  - section:
+      contents:
+        # * Specifies an empty cell.  No value is provided for the key.
+        # * Here, an empty cell is used to center the second cell in the web-page,
+        #   and thereby center its Comments-link in the web-page.
+        empty:
+
+
+# Specifies HTML to be added to the document div, just after the Word HTML. (Optional)
+# * Primarily intended to implement a comments section for the document, e.g., using Commento.
+# * Also, creates an anchor tag with the name attribute "word_web_nav_document_text_trailer",
+#   which can be linked to.
+document_text_trailer: |
+  <div id="commento"></div>
+  <script defer
+    src="https://cdn.commento.io/js/commento.js">
+  </script>
+
+
+# Specifies how the Word HTML is to be edited. (Optional)
+word_html_edits:
+  # Specifies how the style "color:white" is to be removed, optional.
+  # * Permissible values are:  doNotRemove, removeInParagraphs, removeAll
+  white_colored_text: removeAll
