@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<!--
+DESCRIPTION: 
+* A Jinja2 template, used by create_web_page.py, to create its ouput HTML-file
+
+MIT License, Copyright (c) 2021-present Jim Yuill
+-->
+<head>
+<!-- 
+* The Word HTML-file has a head section. The contents of that head-section are
+  copied in here.  The opening and closing head-tags are not copied: <head> and </head>.
+* These head-section contents can be overridden later in the present head-section, if needed.
+  Head-section contents copied in at {{additional_html}} will over-ride the Word-HTML
+  head-section contents.
+-->
+<!-- Jinja2 substitution: 
+     * Replace *word_head_section_contents* with the contents of the <head>...</head> section, 
+       from the Word HTML
+-->
+{{word_head_section_contents}}
+
+<!-- The following meta element can be commented-out if it's not wanted.
+     https://stackoverflow.com/questions/3632166/should-i-include-a-meta-generator-tag
+-->
+<!-- Jinja2 substitution: replace *version* with the system version -->
+<meta name=Generator content="WordWebNav, version {{version}}">
+
+<!-- Jinja2 substitution: 
+     * In create_web_page's parameter-file, an optional web-page title can be provided.
+     * If a title was provided, replace *title_tag* with a <title> tag containing the title 
+-->
+{{title_tag}}
+
+<!-- Jinja2 substitution: 
+     * In create_web_page's parameter-file, an optional web-page description can be provided.  
+     * If a description was provided, replace *meta_tag_with_description* 
+       with the appropriate <meta ...> tag containing the description
+-->
+{{meta_tag_with_description}}
+
+<!-- The libraries used are:  jQuery and jQuery UI
+     * For these libraries, the links below are the latest versions, as of 3/2021 
+-->
+<link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
+<script src='https://code.jquery.com/jquery-3.6.0.js'></script>
+<script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
+
+<!-- CSS and javascript files, for the web-page -->
+
+<!-- Jinja2 substitution: 
+     * The web-page uses a CSS-file and a Javascript-file.
+     * In create_web_page's parameter-file, a URL is provided for the folder that has the
+       those files.
+     * Replace *page_structure_css_file_path* with the URL for the CSS-file
+-->
+<link rel="stylesheet" type="text/css" href="{{page_structure_css_file_path}}">
+
+<!-- Jinja2 substitution: 
+     * Replace *web_page_js_file_path* with the URL for the Javascript file 
+-->  
+<script type="text/javascript" src="{{web_page_js_file_path}}"></script>
+
+<!-- Jinja2 substitution: 
+     * In create_web_page's parameter-file, optional HTML can be provided for this head-section.
+     * Replace *additional_html* with that HTML
+-->
+{{additional_html}}
+
+</head>
+
+<!-- Jinja2 substitution: 
+     * replace *bodyOpeningTag* with the <body> opening-tag from the Word HTML
+     * It's just the opening-tag, not the whole body-element.
+-->
+{{bodyOpeningTag}}
+
+<!-- The header div 
+     * The header is intended primarily for breadcrumbs and URLs.
+     * The header is different than the HTML head-section.
+-->
+<div id="header" class="headerText">
+
+<!-- Jinja2 substitution: 
+     * In create_web_page's parameter-file, text and HTML can be provided for the web-page's header.
+     * Replace *web_page_header* with the HTML for the web-page's header 
+-->
+{{web_page_header}}
+
+</div> <!-- End of: <div id="header"... > -->
+
+<div id='container'>
+
+    <div id='table-of-contents'>
+
+<!-- Jinja2 substitution: 
+     * Replace *table_of_contents* with the table-of-contents from the Word-HTML.
+-->
+{{table_of_contents}}
+
+    </div>  <!-- End of: <div id='table-of-contents'> -->
+    
+    <div id='splitter-bar'></div>
+    
+    <div id='document'>
+
+<!-- Jinja2 substitution: 
+     * Replace *document_text* with the Word-HTML for the document's text.
+     * This is the HTML within the Word-HTML's body-element, after the table-of-contents
+       at the top of the document.  (That table-of-contents is optional.)
+-->
+{{document_text}}
+
+<!-- Jinja2 substitution: 
+     * In create_web_page's parameter-file, HTML can be provided that is to be inserted 
+       after the document-text
+     * Replace *document_text_trailer* with that HTML.
+ -->
+{{document_text_trailer}}
+
+    </div>  <!-- End of: <div id='document'> -->
+
+</div> <!-- End of: <div id='container'> -->
+
+</body>
+</html>

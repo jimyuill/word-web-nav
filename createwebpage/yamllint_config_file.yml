@@ -1,0 +1,25 @@
+---
+# DESCRIPTION:
+# * A yamllint config-file, used by create_web_page.py.
+#
+# * When create_web_page is called, it is passed a parameter-file that is in YAML format.
+# * create_web_page uses yamllint to verify that parameter-file's YAML syntax.
+#
+# * yamllint itself uses a config-file, and 
+#   it specifies the YAML syntax-checking to be performed.
+# * The present file is the yamllint config-file that is used by create_web_page,
+#   when it calls yamllint.
+#
+# * yamllint documentation: 
+#   * Configuration: https://yamllint.readthedocs.io/en/stable/configuration.html
+#   * Rules: https://yamllint.readthedocs.io/en/stable/rules.html
+#
+# MIT License, Copyright (c) 2021-present Jim Yuill
+#
+extends: default
+
+rules:
+  line-length: disable
+  new-line-at-end-of-file: disable
+  trailing-spaces: disable
+  empty-lines: disable
