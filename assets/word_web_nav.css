@@ -1,0 +1,397 @@
+/*
+DESCRIPTION:  CSS file for the WordWebNav web-page
+
+There are two parts to this file:
+* CSS IDs (e.g., #header) for the web-page's 4 sections.
+* CSS classes for the text in the web-page sections: header and table-of-contents
+
+The CSS uses the jQuery and jQuery UI libraries.
+* https://jquery.com/
+* https://jqueryui.com/
+
+* The system documentation has additional info on its: installation, use, design 
+  and implementation (code).
+
+MIT License, Copyright (c) 2021-present Jim Yuill
+
+*/
+
+/******************************************************************
+ This section specifies the CSS IDs (e.g., #header) for the web-page's 4 sections:  
+ * header, table-of-contents, splitter-bar, document
+ 
+Each section is defined in the HTML by a div.
+* The "header" is the top section, and it's the width of the browser-window.
+* The bottom three sections are adjacent to each other:
+  * table-of-contents, splitter-bar, document
+* The bottom three sections are within a "container" div
+
+* An HTML div is made-up of these 4 parts, in this order, from inside to outside:
+  * Content-area : padding : border : margin
+https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/The_box_model
+https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Box_Model
+https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block
+
+*******************************************************************/ 
+
+/* Specify the header section 
+   * It contains the header text, e.g., the bread-crumb links, and the comments link
+*/
+#header {
+    /* calc()
+       * In calc(), spaces are required around math-operators, e.g., "-" 
+       * calc() is not in older browsers
+https://stackoverflow.com/questions/16164736/height-calc100-not-working-correctly-in-css
+    */
+
+    /* Specify the header div's position
+https://developer.mozilla.org/en-US/docs/Web/CSS/position
+https://www.internetingishard.com/html-and-css/advanced-positioning/
+https://www.w3schools.com/css/css_positioning.asp
+https://www.freecodecamp.org/news/how-to-use-the-position-property-in-css-to-align-elements-d8f49c403a26/
+    */
+    position: absolute;
+    left:0;
+    top:0;    
+    
+    /* The div's background-color is the same as the background-color 
+       for MS-Word's ribbon */
+    background-color: #f3f2f1;
+
+    /*
+    Specify the header-div's parts and their sizes
+    
+    The header div's size is:
+    * Overall width:  100vw, the browswer's full width
+    * Overall height:  42px =
+        20px (content-area height) + 
+        20px (top and bottom padding's height) +
+        2px (bottom-border height)
+    */
+
+    /* Content area: 
+       * Contains the header text
+       * The content-area's size is specified by "height:" and "width:"
+    */
+    height: 20px;  /* Use the height of the header's font (specified below) */
+    width: calc(100vw - 40px);  /* The browser's full width, minus the width of the left and right padding*/
+    
+    /* Padding:
+       * Space between the content area and the margin
+       * Specified by the "padding-*" property/value pairs.
+    */
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+
+    /* Only a bottom border is used.  It's a thin black line. */
+	border-width: 0px;
+	border-bottom-width: 2px;
+    border-bottom-style: solid;
+    border-bottom-color: black; 
+
+    /* The margin isn't used */
+    margin: 0px;
+    
+}
+
+/* Specify the "container" section.
+   * It contains three sub-sections:  "table-of-contents", "splitter-bar", "document"
+*/
+#container {
+    position: absolute;    
+    /* The div's position 
+       * The container is just below the header.
+       * So, "top:" specifies the header's total height.
+    */    
+    top: 42px;  
+    left:0;    
+
+    width: 100vw;  /* The browser's full width */
+    height: calc(100vh - 42px);  /* The browser's full height, minus the header's height */
+
+    /* The container does not have padding, margin, or a border */
+    padding: 0px;
+    margin: 0px;
+    border-width: 0px;
+
+    background-color: white;
+}
+
+/*
+Specify the table-of-contents section
+*/
+#table-of-contents {
+    /* The div's position within the container */
+    position: absolute;
+    top: 0px;
+    left: 0;
+   
+    /*  The alignment process for the lower 3 sections:  table-of-contents, splitter-bar, document
+    
+        For the lower-sections' div's, specifying the width as a percentage can result in 
+        misalignment of the sections.  For example, "width: calc(25% - 20px);"
+        
+        In particular, instead of two sections being adjacent, they can be separated by an
+        unintended 1px vertical line.
+        * For example, between the table-of-contents and splitter-bar
+        * Although small, the line can be noticable, especially when it has a conspicuous color.
+
+        The misalignment and how it can occur is described below.
+        * It's not possible to fix the misalignment here in the CSS, 
+          unless an additional library is used, such as flexbox.
+https://cruft.io/posts/percentage-calculations-in-ie/
+https://stackoverflow.com/questions/49957813/percents-rounding-for-element-width-in-css
+        * Instead, the misalignment is fixed in the web-page's javascript.
+               
+        The browser-window's lay-out is specified for each of its sections, e.g., table-of-contents.  
+          * For a section, its location is specified (e.g., "top: 0;", and "left: 40px;").
+            Also, the section's width and height are specified.
+          * Ultimately those specifications are in units of px's, e.g., 20px.
+          * A px is the width of the narrowest line that can be displayed with clean edges.
+         
+        Instead of specifying px's, a percentage of the screen can be specified.
+          * For example, "width: 25%;"
+          * For the percentage calculation, the result can have a fractional part, 
+            * e.g., 250.125 px
+          * For fractional results, info on how browsers perform rounding is not readily available.
+          * Further, a browser is not necessarily consistent in how it performs rounding, 
+            for the various CSS property/value pairs, 
+            * e.g., in "width: %25;", the 25% might be rounded differently than in "left: 25%;"
+          * Also, CSS provides no functions for rounding, e.g., no round or floor functions.
+        
+        * This section provides a hypothetical example of how px percentage-calculations can 
+          cause alignment problems.
+            * In the present file, for the div "table-of-contents", its width is specified as:  
+              "width: 25%;"
+              * In this example, the 25% is calculated as 100.250px, and the browser could round to
+                either 100px or 101px.  
+            * The splitter-bar section is just to the right of the table-of-contents section.
+              * The splitter-bar's left coordinate is specified as: "left: 25%;"
+              * The 25% is calculated as 100.250 px, and the browswer could round to
+                either 100px or 101px.  
+            * So, there could be a 1px gap between the table-of-contents and splitter-bar
+                * For the table-of-contents', a width of 100px could be used, so the table-of-contents 
+                  goes from 0px to 99px.
+                * The splitter-bar could start at 101px
+                * There would be a 1px gap at 100px, and it will have the default background-color.  
+                * If that color differs from the colors of table-of-contents and splitter-bar, 
+                  then the gap can be noticeable, and look sloppy.
+              
+        * How this misalignment problem is solved here:
+          * The CSS is written as if the px percentage-calculations always round to the same value.
+            * Consequently, there could be 1px gaps between the lower three sections.
+          * The sections' alignments are then fixed in the web-page's javascript code.
+            * In particular, the alignment is fixed when the web-page is loaded in the browser.
+            * Unlike CSS, Javascript has math functions that can be used to get proper alignment.
+          * Also, in the CSS, some percentage calculations are for 100%, e.g., "height: calc(100% - 10px);"
+            * When 100% is used, no rounding is performed, so there are no alignment problems
+    */
+
+    /* The div's size is:
+       * Width:  
+         * 25% of the container's full width, minus the padding-left width.
+         * This will be the width when the page is loaded.
+           After the page is loaded, the width will be changed when the splitter-bar is moved.
+         * A negative width is possible, for a browser window with width less than 80px.
+           * If this occurs, the web-page's javascript will set this width to 0px.
+       * Height:  The container's full height, minus the padding-top width
+    */
+    width: calc(25% - 20px); 
+    height: calc(100% - 10px);  
+
+    /* The padding-area is used to create a space on the left and top */
+    padding-top: 10px;
+    padding-left: 20px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+
+    /* The border and margin aren't used */
+	border-width: 0px;
+    margin: 0px;
+
+    /* Specify the scroll-bars 
+       * auto: the scroll-bar is provided if needed
+    */
+    /* How the vertical scroll-bar is placed
+       * This is what I could determine, from my experiments:
+         * The scroll-bar is inserted between the right-border and the right-padding.
+         * Space for the scroll-bar is obtained by reducing the content-area
+    */
+    overflow-y: auto;
+    /* If the text is wider than the section's width:
+       * The x-axis scroll-bar will be inserted, and
+         the text will not wrap.  
+       * The overflowing text can be seen by scrolling to the right.
+https://developer.mozilla.org/en-US/docs/Web/CSS/white-space
+https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
+    */
+    white-space: nowrap;
+    overflow-x: auto;
+    
+    /* The div's background-color is the same as the background-color in MS-Word's 
+       table-of-contents */
+    background-color: #e6e6e6; 
+    
+}
+
+/* Specify the splitter-bar section
+*/
+#splitter-bar {
+    /* The div's position within the container 
+       * This is the splitter-bar's position when the page is loaded, before being moved by the user 
+    */
+    position: absolute;
+    top: 0px;
+    left: 25%;
+
+    /* The splitter-bar's size */
+    height: 100%;
+    width: 12px;
+
+    padding: 0px;
+    margin: 0px;
+    border-width: 0px;
+
+    /* When the pointer is over the splitter-bar, use a move-type pointer */
+    cursor: move;
+
+    /* Specify the splitter-bar's appearance:
+       * It's light black, with 2 white bars in the center.
+       * The white bars are provided via word_web_nav_splitter_bar_icon.png
+    */
+	background:  url("./word_web_nav_splitter_bar_icon.png") center center no-repeat #444444;
+}
+
+/* Specify the document section.
+   * This section contains the document text.
+*/
+#document {
+    /* The div's position within the container */
+    position: absolute;
+    top: 0px;
+
+    /* Make the left edge adjacent to the splitter-bar:
+       * Total width of the table-of-contents: 25%
+       * Total width of the splitter-bar: 12px
+    */
+	left: calc(25% + 12px); 
+    
+    /* Specify the content-area's width:
+       * 75%: the container's total-width minus the table-of-contents' total width.
+       * 12px: the splitter-bar's total-width
+       * 20px + 20px: the width of the document's padding-right and padding-left
+       * 2px: the document's border-right-width
+       
+       A negative width is possible, for a very skinny browser window.
+       * If this occurs, the web-page's javascript will set this width to 0px.       
+    */
+    width: calc(75% - (12px + 20px + 20px + 2px)); 
+
+    /* Specify the content-area's height.  It's the same as the table-of-contents height. */
+    height: calc(100% - 10px);
+    
+    padding-top: 10px;
+    padding-right: 20px;
+    padding-bottom: 0px;
+    padding-left: 20px;
+	
+    border-width: 0px;
+	border-right-width: 2px;  /* Thin black vertical line */
+    border-right-style: solid;
+    border-right-color: black; 
+    
+    margin: 0;
+
+    /* Limit the content-area's width to a reasonable length for reading text.
+       * MS Word's HTML does not limit the text's line-length. 
+         * So, by default, text lines can be as wide as the whole content-area 
+         * For a wide browser-window, such long text-lines are difficult to read.
+       * max-width is used here to limit the text's line-length to be no more than 960px.
+       * For pictures, their displayed width is not limited by max-width.
+       * However, if a picture is more than 960px, a horizontal scroll-bar is provided
+         to see the whole image.         
+    */
+	max-width: 960px; 
+    
+    /* Sroll-bars
+    */
+    overflow-y: auto;
+    overflow-x: auto;    
+
+    background-color: white;     
+}
+
+
+/***********************************************************
+ CSS classes for formatting text in the sections:  header, table-of-contents 
+  
+************************************************************/
+
+/* The header-text's font is similar to what's used for typical h3 headings.
+
+** font-size:
+* The font size is set to be similar to the typical h3.
+  * Typical h3:  font-size: 1.17em
+  * Typical em:  16px
+  * 1.17em = 1.17*16px = 18.72px
+* The font-size is specified here in px units.
+  * This will also be the font height.
+  * px units are used here because px units are used in positioning
+    the div's, e.g., in specifying the div's height and width.
+https://www.w3schools.com/tags/tag_hn.asp
+https://developer.mozilla.org/en-US/docs/Web/CSS/font-size
+https://stackoverflow.com/questions/5410066/what-are-the-default-font-sizes-in-pixels-for-the-html-heading-tags-h1-h2
+
+** font-family: 
+* A web-safe font-family is used.
+https://www.w3schools.com/w3css/w3css_fonts.asp
+https://developer.mozilla.org/en-US/docs/Web/CSS/font-family
+
+** line-height:
+* The line-height is set to be the same as the font-size.
+* The header section includes top and bottom padding, and 
+  that padding provides spacing for the header's text-line.
+https://developer.mozilla.org/en-US/docs/Web/CSS/line-height
+
+*/
+
+/* Declarations common to all text in the header
+*/
+.headerText { 
+  font-size: 20px;
+  /* font-weight:  400 is the same as normal, and 700 is the same as bold
+     https://www.w3schools.com/cssref/pr_font_weight.asp
+  */
+  font-weight: 450;
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1;
+  color: black;  /* The default color, used for the breadcrumb "/" characters */
+ }
+
+/* CSS declarations for <a> tags in the header
+*/
+a.headerHref {
+    color: blue;  /* Link color does not change if it's been clicked on */
+    text-decoration: none;  /* Underlines are not specified on the links */
+}
+
+/* These classes are used for the links displayed in the table-of-contents.
+   * Those links are formatted by MS Word, by using these MS-Word CSS classes:  
+     * a:link and span.MsoHyperlink
+   * That formatting makes the links underlined, 
+     and the links turn purple after they've been clicked-on.
+   * The following classes are used to format the links so that they are not 
+     underlined, and so that they are always blue.
+   * In the HTML for the table-of-contents, the links need to be updated
+     to reference these classes.  How the links are updated is described 
+     in create_web_page.py.
+
+https://developer.mozilla.org/en-US/docs/Learn/CSS/Styling_text/Styling_links
+https://www.w3schools.com/css/css_link.asp
+*/
+a.tocAnchor, span.tocAnchor {
+    color: blue;  /* Link color does not change if it's been clicked on */
+    text-decoration: none;  /* Underlines are not specified on the links */
+}
