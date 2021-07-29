@@ -42,7 +42,7 @@ MIT License, Copyright (c) 2021-present Jim Yuill
 <!-- The libraries used are:  jQuery and jQuery UI
      * For these libraries, the links below are the latest versions, as of 3/2021 
 -->
-<link rel='stylesheet' href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
+<link rel='stylesheet' type="text/css" href='https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css'>
 <script src='https://code.jquery.com/jquery-3.6.0.js'></script>
 <script src='https://code.jquery.com/ui/1.12.1/jquery-ui.js'></script>
 
@@ -75,19 +75,19 @@ MIT License, Copyright (c) 2021-present Jim Yuill
 -->
 {{bodyOpeningTag}}
 
-<!-- The header div 
-     * The header is intended primarily for breadcrumbs and URLs.
-     * The header is different than the HTML head-section.
+<!-- The header-bar div 
+     * The header-bar is intended primarily for breadcrumbs and URLs.
+     * The header-bar is different than the HTML head-section.
 -->
-<div id="header" class="headerText">
+<div id="header-bar" class="headerBarText">
 
 <!-- Jinja2 substitution: 
-     * In create_web_page's parameter-file, text and HTML can be provided for the web-page's header.
-     * Replace *web_page_header* with the HTML for the web-page's header 
+     * In create_web_page's parameter-file, text and HTML can be provided for the web-page's header-bar.
+     * Replace *header_bar* with the HTML for the web-page's header 
 -->
-{{web_page_header}}
+{{header_bar}}
 
-</div> <!-- End of: <div id="header"... > -->
+</div> <!-- End of: <div id="header-bar"... > -->
 
 <div id='container'>
 

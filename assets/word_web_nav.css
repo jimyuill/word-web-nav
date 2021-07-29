@@ -2,8 +2,8 @@
 DESCRIPTION:  CSS file for the WordWebNav web-page
 
 There are two parts to this file:
-* CSS IDs (e.g., #header) for the web-page's 4 sections.
-* CSS classes for the text in the web-page sections: header and table-of-contents
+* CSS IDs (e.g., #header-bar) for the web-page's 4 sections.
+* CSS classes for the text in these two web-page sections: header-bar and table-of-contents
 
 The CSS uses the jQuery and jQuery UI libraries.
 * https://jquery.com/
@@ -17,11 +17,11 @@ MIT License, Copyright (c) 2021-present Jim Yuill
 */
 
 /******************************************************************
- This section specifies the CSS IDs (e.g., #header) for the web-page's 4 sections:  
- * header, table-of-contents, splitter-bar, document
+ This section specifies the CSS IDs (e.g., #header-bar) for the web-page's 4 sections:  
+ * header-bar, table-of-contents, splitter-bar, document
  
 Each section is defined in the HTML by a div.
-* The "header" is the top section, and it's the width of the browser-window.
+* The "header-bar" is the top section, and it's the width of the browser-window.
 * The bottom three sections are adjacent to each other:
   * table-of-contents, splitter-bar, document
 * The bottom three sections are within a "container" div
@@ -34,17 +34,17 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/Containing_block
 
 *******************************************************************/ 
 
-/* Specify the header section 
-   * It contains the header text, e.g., the bread-crumb links, and the comments link
+/* Specify the header-bar section 
+   * It contains the header-bar text, e.g., the bread-crumb links, and the comments link
 */
-#header {
+#header-bar {
     /* calc()
        * In calc(), spaces are required around math-operators, e.g., "-" 
        * calc() is not in older browsers
 https://stackoverflow.com/questions/16164736/height-calc100-not-working-correctly-in-css
     */
 
-    /* Specify the header div's position
+    /* Specify the header-bar div's position
 https://developer.mozilla.org/en-US/docs/Web/CSS/position
 https://www.internetingishard.com/html-and-css/advanced-positioning/
 https://www.w3schools.com/css/css_positioning.asp
@@ -59,9 +59,9 @@ https://www.freecodecamp.org/news/how-to-use-the-position-property-in-css-to-ali
     background-color: #f3f2f1;
 
     /*
-    Specify the header-div's parts and their sizes
+    Specify the header-bar div's parts and their sizes
     
-    The header div's size is:
+    The header-bar div's size is:
     * Overall width:  100vw, the browswer's full width
     * Overall height:  42px =
         20px (content-area height) + 
@@ -70,10 +70,10 @@ https://www.freecodecamp.org/news/how-to-use-the-position-property-in-css-to-ali
     */
 
     /* Content area: 
-       * Contains the header text
+       * Contains the header-bar text
        * The content-area's size is specified by "height:" and "width:"
     */
-    height: 20px;  /* Use the height of the header's font (specified below) */
+    height: 20px;  /* Use the height of the header-bar's font (specified below) */
     width: calc(100vw - 40px);  /* The browser's full width, minus the width of the left and right padding*/
     
     /* Padding:
@@ -102,14 +102,14 @@ https://www.freecodecamp.org/news/how-to-use-the-position-property-in-css-to-ali
 #container {
     position: absolute;    
     /* The div's position 
-       * The container is just below the header.
-       * So, "top:" specifies the header's total height.
+       * The container is just below the header-bar.
+       * So, "top:" specifies the header-bar's total height.
     */    
     top: 42px;  
     left:0;    
 
     width: 100vw;  /* The browser's full width */
-    height: calc(100vh - 42px);  /* The browser's full height, minus the header's height */
+    height: calc(100vh - 42px);  /* The browser's full height, minus the header-bar's height */
 
     /* The container does not have padding, margin, or a border */
     padding: 0px;
@@ -325,11 +325,11 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
 
 
 /***********************************************************
- CSS classes for formatting text in the sections:  header, table-of-contents 
+ CSS classes for formatting text in the sections:  header-bar, table-of-contents 
   
 ************************************************************/
 
-/* The header-text's font is similar to what's used for typical h3 headings.
+/* For the header-bar's text, the font used is similar to typical h3 headings.
 
 ** font-size:
 * The font size is set to be similar to the typical h3.
@@ -351,15 +351,15 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/font-family
 
 ** line-height:
 * The line-height is set to be the same as the font-size.
-* The header section includes top and bottom padding, and 
-  that padding provides spacing for the header's text-line.
+* The header-bar section includes top and bottom padding, and 
+  that padding provides spacing for the header-bar's text-line.
 https://developer.mozilla.org/en-US/docs/Web/CSS/line-height
 
 */
 
-/* Declarations common to all text in the header
+/* Declarations common to all text in the header-bar
 */
-.headerText { 
+.headerBarText { 
   font-size: 20px;
   /* font-weight:  400 is the same as normal, and 700 is the same as bold
      https://www.w3schools.com/cssref/pr_font_weight.asp
@@ -370,9 +370,9 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/line-height
   color: black;  /* The default color, used for the breadcrumb "/" characters */
  }
 
-/* CSS declarations for <a> tags in the header
+/* CSS declarations for <a> tags in the header-bar
 */
-a.headerHref {
+a.headerBarHref {
     color: blue;  /* Link color does not change if it's been clicked on */
     text-decoration: none;  /* Underlines are not specified on the links */
 }

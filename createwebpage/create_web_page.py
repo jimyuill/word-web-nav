@@ -1,16 +1,16 @@
 #!/usr/bin/env python
 '''
-DESCRIPTION:  Converts a Word HTML-file into WordWebNav HTML-format
+DESCRIPTION:  Converts a Word HTML-file into a WordWebNav (WWN) web-page
 
 USAGE:  
 * From the Windows command-line:  
 > cd <directory with create_web_page.py>
-> python create_web_page.py <parameter-file path>
+> python create_web_page.py <full-path of parameter-file>
 
-* python 3.8.5 or newer is required.  Older versions of python 3 might work.
+* If <full-path of parameter-file> is omitted, the user is prompted for it.
 
 * The parameter-file includes specification of the input Word HTML-file,
-  and the directory for the output WordWebNav HTML-file.
+  and the directory for the output WWN web-page.
 * A parameter-file template is provided with the system distribution.
 
 * The system documentation has additional info on its: installation, use, design 
@@ -26,8 +26,7 @@ from html.parser import HTMLParser
 import os
 import re
 import shutil
-import sys
-import math
+import sys 
 
 # These libraries need to have been installed by the user
 try:
@@ -61,6 +60,16 @@ except ImportError as e:
     print("")    
     sys.exit()
 
+# Check Python version 3
+# * Works with Python 2.6 and below:
+#   * https://stackoverflow.com/questions/446052/how-can-i-check-for-python-version-in-a-program-that-uses-new-language-features
+if sys.version_info[0] < 3:
+    print("")
+    print("ERROR.  Python version 3 is required.")
+    print("        WordWebNav has been tested with Python 3.7.0 and 3.9.6")
+    print("")    
+    sys.exit()
+
 '''
 ##################
 Code Section: Global constants and variables
@@ -69,15 +78,31 @@ Code Section: Global constants and variables
 
 '''
 ##################
+Global variables
+##################
+'''
+num_warning_messages_g = 0
+list_item_list_g = []
+
+# Check Python version is at least 3.7
+if sys.version_info[1] < 7:
+    num_warning_messages_g += 1
+    print("")
+    print("WARNING.  Python version is less than 3.7.")
+    print("          WordWebNav has been tested with Python 3.7.0 and 3.9.6")   
+    print("")    
+
+'''
+##################
 Global constants
 ##################
 '''
 # Text added to the generated HTML
-# * For the web-page header, specifies the separator between
+# * For the web-page header-bar, specifies the separator between
 #   breadcrumbs, e.g., the " / " in:  Home / Topic-1 / Topic-1.1 
 BREAD_CRUMB_SEPARATOR = " / "
 # For the document-text trailer, specifies the anchor name.
-# * The anchor name can be linked-to from the web-page header.
+# * The anchor name can be linked-to from the web-page header-bar.
 DOCUMENT_TEXT_TRAILER_ANCHOR_NAME = "word_web_nav_document_text_trailer"
 
 # Names of WordWebNav files that are opened or referenced
@@ -91,8 +116,8 @@ CSS classes that are referenced in some of the HTML that is generated.
 * The classes are defined in the CSS-file whose name is specified above, in the variable: 
   PAGE_STRUCTURE_CSS_FILE_NAME
 '''
-CSS_HEADER_TEXT = "headerText"
-CSS_HEADER_HREF = "headerHref"
+CSS_HEADER_BAR_TEXT = "headerBarText"
+CSS_HEADER_BAR_HREF = "headerBarHref"
 
 '''
 Schema definitons, for the parameter-file.
@@ -116,12 +141,12 @@ KEY_INPUT_HTML_PATH = "input_html_path"
 KEY_OUTPUT_DIRECTORY_PATH = "output_directory_path"
 KEY_SCRIPTS_DIRECTORY_URL = "scripts_directory_url"
 
-KEY_HTML_HEAD = "html_head"
+KEY_HTML_HEAD_SECTION = "html_head_section"
 KEY_TITLE = "title"
 KEY_DESCRIPTION = "description"
 KEY_ADDITIONAL_HTML = "additional_html"
 
-KEY_WEB_PAGE_HEADER = "web_page_header"
+KEY_HEADER_BAR = "header_bar"
 KEY_SECTION = "section"
 KEY_CONTENTS = "contents"
 
@@ -185,15 +210,15 @@ PARAMETER_FILE_SCHEMA = {
         }
     },
 
-    # Parameter-file section:  html_head:
+    # Parameter-file section:  html_head_section:
     # Example:
-    #   html_head:
+    #   html_head_section:
     #     title: Sys-Admin How-To Info
     #     description: Solutions for my various sys-admin tasks
     #     additional_html: <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />    
-    KEY_HTML_HEAD: {
+    KEY_HTML_HEAD_SECTION: {
         "type": "dict",
-        "required": True,
+        "required": False,
         "schema": {
             KEY_TITLE: {
                 "type": "string",
@@ -213,9 +238,9 @@ PARAMETER_FILE_SCHEMA = {
         }
     },
 
-    # Parameter-file section:  web_page_header:
+    # Parameter-file section:  header_bar:
     # Example:
-    #  web_page_header:
+    #  header_bar:
 	#    # One or more sections
     #    - section:
     #        contents:
@@ -230,7 +255,7 @@ PARAMETER_FILE_SCHEMA = {
     #          empty:
     #
     #        contents_alignment:
-    KEY_WEB_PAGE_HEADER: {
+    KEY_HEADER_BAR: {
         "type": "list",
         "required": False,
         "schema": {
@@ -442,15 +467,6 @@ html_entity_encodings_g[KEY_SIX_NBSPS][KEY_DECODE] = "&nbsp;&nbsp;&nbsp;&nbsp;&n
 
 
 '''
-##################
-Global variables
-##################
-'''
-num_warning_messages_g = 0
-list_item_list_g = []
-
-
-'''
 #########
 Code Section:  Functions called from generate_html()
 #########
@@ -466,9 +482,11 @@ Function:  create_arg_parser()
 '''
 def create_arg_parser():
     parser = argparse.ArgumentParser(description=
-        'Converts a Word-HTML-file to a web-page with a header and navigation-pane.')
-    parser.add_argument('parameter_file_path', metavar="<parameter-file-path>",
-                    help='Path to the parameter-file.')
+        'Converts a Word HTML-file to a usable web-page.')
+    # * One positional argument, and it is optional
+    # * https://stackoverflow.com/questions/4480075/argparse-optional-positional-arguments/31243133
+    parser.add_argument('parameter_file_path', nargs='?', metavar="<parameter-file-path>",
+                    help='Full-path to the parameter-file.')
     return parser
 # END OF:  def create_arg_parser()
 
@@ -634,7 +652,7 @@ def generate_html(parameter_file_path: str):
         'word_head_section_contents': "",
         'additional_html': "",
         'body': "",
-        'web_page_header': "",
+        'header_bar': "",
         'table_of_contents': "",
         'document_text': "",
         'document_text_trailer': ""
@@ -648,6 +666,7 @@ def generate_html(parameter_file_path: str):
         print("")
         print("ERROR.  Could not open the parameter-file.")
         print("        %s - %s." % (e.strerror, e.filename))
+        print("")        
         return 1, num_warning_messages_g
 
     '''
@@ -677,6 +696,7 @@ def generate_html(parameter_file_path: str):
         print("")
         print("ERROR.  Could not open the config-file for yamllint.")
         print("        %s - %s." % (e.strerror, e.filename))
+        print("")        
         parameter_file_handle.close()
         return 1, num_warning_messages_g
 
@@ -834,7 +854,7 @@ def generate_html(parameter_file_path: str):
     search_result = re.search(regex, jinja_template_file_data, (re.M | re.S))
     if search_result == None:
         print("")
-        print("ERROR.  The HTML template-file does not have the expected signature:")
+        print("ERROR.  The jinja template-file does not have the expected signature:")
         print("        " + jinja_template_file_signature)
         return 1, num_warning_messages_g
 
@@ -864,7 +884,7 @@ def generate_html(parameter_file_path: str):
         soup = BeautifulSoup(input_html_handle, 'html.parser')
     except Exception as error:
         print("")
-        print("ERROR.  Could not parse the input Word-HTML-file.")
+        print("ERROR.  Could not load the input Word HTML-file.")
         print("        Exception in call to BeautifulSoup:")
         print("")
         print(str(error))
@@ -881,7 +901,7 @@ def generate_html(parameter_file_path: str):
     heads = soup.find_all('head')
     if len(heads) != 1:
         print("")
-        print("ERROR.  The input Word-HTML does not have exactly one <head> element. ")
+        print("ERROR.  The input Word-HTML does not have exactly one <head> element.")
         return 1, num_warning_messages_g
     head = heads[0]
 
@@ -889,7 +909,7 @@ def generate_html(parameter_file_path: str):
     bodys = soup.find_all('body')
     if len(bodys) != 1:
         print("")
-        print("ERROR.  The input Word-HTML does not have exactly one <body> element. ")
+        print("ERROR.  The input Word-HTML does not have exactly one <body> element.")
         return 1, num_warning_messages_g
     body = bodys[0]
 
@@ -911,21 +931,21 @@ def generate_html(parameter_file_path: str):
     # * <meta name=Generator content="Microsoft Word [version] (filtered)">
     # The signature appears to be used back to at least Word 2007:
     # * https://answers.microsoft.com/en-us/msoffice/forum/msoffice_word-mso_winother-msoversion_other/creating-html-with-word-2007/5d344731-d2f3-4568-b504-45256567f782
+    signature_found = False
     meta_found = soup.head.find('meta', attrs={'name': 'Generator'})
-    if (meta_found == None) or (not ('content' in meta_found.attrs)):
-        print("")
-        print("ERROR.  The input Word-HTML does not have the expected MS-Word signature:")
-        print("        <meta name=Generator content=\"Microsoft Word [version] (filtered)\">")
-        return 1, num_warning_messages_g
-    else:
+    if (meta_found != None) and ('content' in meta_found.attrs):
         meta_content = meta_found['content']
         regex = r"^Microsoft Word [0-9]+ \(filtered\)$"
         search_result = re.search(regex, meta_content, re.M)
-        if search_result == None:
-            print("")
-            print("ERROR.  The input Word-HTML does not have the expected MS-Word signature:  ")
-            print("        <meta name=Generator content=\"Microsoft Word [version] (filtered)\">")
-            return 1, num_warning_messages_g
+        if search_result != None:
+            signature_found = True
+
+    if signature_found == False:
+        print("")
+        print("ERROR.  The input Word-HTML does not have the expected MS-Word signature:")
+        print("        <meta name=Generator content=\"Microsoft Word [version] (filtered)\">")
+        print("")        
+        return 1, num_warning_messages_g
 
     '''
     Test that the output directory exists
@@ -1076,16 +1096,17 @@ def generate_html(parameter_file_path: str):
     '''
     Get the data for the output HTML <head> section, from the caller's parameter-file
     '''
-    # The data is specified under the key "html_head:""
+    # The data is specified under the key "html_head_section:""
     # Example:
-    #   html_head:
+    #   html_head_section:
     #     title: Sys-Admin How-To Info
     #     description: Solutions for my various sys-admin tasks
     #     additional_html: <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />    
 
     # Get the data for the Jinja variable: title
-    if KEY_TITLE in loaded_parms[KEY_HTML_HEAD]:
-        key_title_value = loaded_parms[KEY_HTML_HEAD][KEY_TITLE]
+    if ( (KEY_HTML_HEAD_SECTION in loaded_parms) and 
+         (KEY_TITLE in loaded_parms[KEY_HTML_HEAD_SECTION]) ):
+        key_title_value = loaded_parms[KEY_HTML_HEAD_SECTION][KEY_TITLE]
         title_tag = "<title>" + key_title_value + "</title>"
     else:
         title_tag = ""
@@ -1093,8 +1114,9 @@ def generate_html(parameter_file_path: str):
     jinja_template_variables['title_tag'] = title_tag
 
     # Get the data for the Jinja variable: description
-    if KEY_DESCRIPTION in loaded_parms[KEY_HTML_HEAD]:
-        key_description_value = loaded_parms[KEY_HTML_HEAD][KEY_DESCRIPTION] 
+    if ( (KEY_HTML_HEAD_SECTION in loaded_parms) and     
+         (KEY_DESCRIPTION in loaded_parms[KEY_HTML_HEAD_SECTION]) ): 
+        key_description_value = loaded_parms[KEY_HTML_HEAD_SECTION][KEY_DESCRIPTION] 
         meta_description_tag = "<meta name=\"description\" content=\"" + \
                              key_description_value + "\">"
     else:
@@ -1103,8 +1125,9 @@ def generate_html(parameter_file_path: str):
     jinja_template_variables['meta_tag_with_description'] = meta_description_tag
 
     # Get the data for the Jinja variable: additional_html
-    if KEY_ADDITIONAL_HTML in loaded_parms[KEY_HTML_HEAD]:
-        key_additional_html_value = loaded_parms[KEY_HTML_HEAD][KEY_ADDITIONAL_HTML]
+    if ( (KEY_HTML_HEAD_SECTION in loaded_parms) and     
+         (KEY_ADDITIONAL_HTML in loaded_parms[KEY_HTML_HEAD_SECTION]) ):
+        key_additional_html_value = loaded_parms[KEY_HTML_HEAD_SECTION][KEY_ADDITIONAL_HTML]
     else:
         key_additional_html_value = ""
     # Jinja will be used to put key_additional_html_value in the output HTML
@@ -1164,23 +1187,23 @@ def generate_html(parameter_file_path: str):
 
     '''
     ###################
-    Code Section:  Construct the HTML for the web-page header
+    Code Section:  Construct the HTML for the web-page header-bar
 
-    * The web-page header can be used for navigation breadcrumbs and for other text or URLs.
-    * The web-page header is different than the HTML <head> section.
+    * The web-page header-bar can be used for navigation breadcrumbs and for other text or URLs.
+    * The web-page header-bar is different than the HTML <head> section.
 
     The HTML is put in a variable that will be used later in the jinja template.
     ###################
     '''
     '''
-    The input parameter-file specifies the contents of the web-page header.
-    * The contents are put in an HTML table, which is put in the "header" div.
+    The input parameter-file specifies the contents of the web-page header-bar.
+    * The contents are put in an HTML table, which is put in the "header-bar" div.
     * The table has no borders and one row.    
     * The system docs provide more info on how the table is constructed
     '''
-    header_table = ""
-    # Test if the parameter-file has the key "web_page_header:"
-    if (KEY_WEB_PAGE_HEADER in loaded_parms):
+    header_bar_table = ""
+    # Test if the parameter-file has the key "header_bar:"
+    if (KEY_HEADER_BAR in loaded_parms):
 
         # Generate the opening-tag for the table 
         # * By default, the columns are made equal-width.
@@ -1197,10 +1220,10 @@ def generate_html(parameter_file_path: str):
         #   * Also need this table attribute:  width="100%"
         #   * https://stackoverflow.com/questions/43561602/add-text-overflow-ellipsis-to-table-cell
         #   * https://developer.mozilla.org/en-US/docs/Web/CSS/table-layout
-        header_table += '<table width="100%" ' + \
+        header_bar_table += '<table width="100%" ' + \
                        'style="margin-left:auto;margin-right:auto;border-collapse:collapse;table-layout:fixed;">\n'
         # Generate table-row opening tag
-        header_table += '<tr>\n'
+        header_bar_table += '<tr>\n'
 
         # Construct the opening tag for the table-cells (<td>)
         # * The table-cell styles include "text-align".  
@@ -1213,19 +1236,19 @@ def generate_html(parameter_file_path: str):
         td_opening_tag = '<td  style="text-align:{0};padding:0;margin:0;' + \
                        'text-overflow:ellipsis;overflow:hidden;white-space:nowrap;">'
 
-        # The header contents are specified in the parameter-file, under the key KEY_WEB_PAGE_HEADER
-        # * Under KEY_WEB_PAGE_HEADER, there are one or more "sections", e.g., KEY_BREADCRUMBS
+        # The header-bar contents are specified in the parameter-file, under the key KEY_HEADER_BAR
+        # * Under KEY_HEADER_BAR, there are one or more "sections", e.g., KEY_BREADCRUMBS
         # * A table-cell is created for each section.
         # * The table-cell's contents are specified in the parameter-file.
         # 
-        # Loop for each section under the key KEY_WEB_PAGE_HEADER
-        for section in loaded_parms[KEY_WEB_PAGE_HEADER]:
+        # Loop for each section under the key KEY_HEADER_BAR
+        for section in loaded_parms[KEY_HEADER_BAR]:
             # Generate the opening-tag for the table cell
             if (KEY_CONTENTS_ALIGNMENT in section[KEY_SECTION]):
                 table_cell_alignment = section[KEY_SECTION][KEY_CONTENTS_ALIGNMENT]
             else:
                 table_cell_alignment = "left"
-            header_table += td_opening_tag.format(table_cell_alignment)
+            header_bar_table += td_opening_tag.format(table_cell_alignment)
 
             # * For the section, determine its content's data-type, e.g., "breadcrumbs".
             # * And, generate the content's HTML 
@@ -1236,7 +1259,7 @@ def generate_html(parameter_file_path: str):
                 # Loop for each "hyperlink"
                 for breadcrumb in section[KEY_SECTION][KEY_CONTENTS][KEY_BREADCRUMBS]:
                     # Construct the breadcrumb:  the anchor tag (<a>) and the breadcrumb-separator
-                    breadcrumbs_html += f"<a class=\"{CSS_HEADER_TEXT} {CSS_HEADER_HREF}\""
+                    breadcrumbs_html += f"<a class=\"{CSS_HEADER_BAR_TEXT} {CSS_HEADER_BAR_HREF}\""
                     breadcrumbs_html += f" href=\"{breadcrumb[KEY_HYPERLINK][KEY_URL]}\">"
                     breadcrumbs_html += f"{breadcrumb[KEY_HYPERLINK][KEY_TEXT]}</a>"
                     breadcrumbs_html += BREAD_CRUMB_SEPARATOR
@@ -1244,23 +1267,23 @@ def generate_html(parameter_file_path: str):
                 # Remove the last separator
                 separator_length = len(BREAD_CRUMB_SEPARATOR)
                 breadcrumbs_html = breadcrumbs_html[0:-separator_length]
-                header_table += breadcrumbs_html
+                header_bar_table += breadcrumbs_html
 
             # Data-type "hyperlink"
             elif KEY_HYPERLINK in contents:
                 # Construct the anchor tag (<a>)
                 hyperlink_dict = section[KEY_SECTION][KEY_CONTENTS][KEY_HYPERLINK]
-                header_table += f"<a class=\"{CSS_HEADER_TEXT} {CSS_HEADER_HREF}\""
-                header_table += f" href=\"{hyperlink_dict[KEY_URL]}\">"
-                header_table += f"{hyperlink_dict[KEY_TEXT]}</a>"
+                header_bar_table += f"<a class=\"{CSS_HEADER_BAR_TEXT} {CSS_HEADER_BAR_HREF}\""
+                header_bar_table += f" href=\"{hyperlink_dict[KEY_URL]}\">"
+                header_bar_table += f"{hyperlink_dict[KEY_TEXT]}</a>"
 
             # Data-type "html"
             elif KEY_HTML in contents:
-                header_table += section[KEY_SECTION][KEY_CONTENTS][KEY_HTML]
+                header_bar_table += section[KEY_SECTION][KEY_CONTENTS][KEY_HTML]
 
             # Data-type "text"
             elif KEY_TEXT in contents:
-                header_table += section[KEY_SECTION][KEY_CONTENTS][KEY_TEXT]
+                header_bar_table += section[KEY_SECTION][KEY_CONTENTS][KEY_TEXT]
 
             # Data-type "empty"
             elif KEY_EMPTY in contents:
@@ -1272,17 +1295,17 @@ def generate_html(parameter_file_path: str):
                 #   Cerberus would then have flagged the data-type as an error.
                 print("")
                 print("ERROR.  Input parameter-file has an unrecognized key under:")
-                print(f"          {KEY_WEB_PAGE_HEADER}: {KEY_SECTION}: {KEY_CONTENTS}:")
+                print(f"          {KEY_HEADER_BAR}: {KEY_SECTION}: {KEY_CONTENTS}:")
                 print("")
                 return 1, num_warning_messages_g
 
             # Generate the closing-tag for the table cell
-            header_table += "</td>\n"
+            header_bar_table += "</td>\n"
         # Generate the closing-tags for the table-row and table
-        header_table += "</tr>\n</table>\n"
+        header_bar_table += "</tr>\n</table>\n"
 
-    # Jinja will be used to put header_table in the output HTML
-    jinja_template_variables['web_page_header'] = header_table
+    # Jinja will be used to put header_bar_table in the output HTML
+    jinja_template_variables['header_bar'] = header_bar_table
 
     '''
     ###################
@@ -1293,13 +1316,13 @@ def generate_html(parameter_file_path: str):
     trailer_html = ""
     if (KEY_DOCUMENT_TEXT_TRAILER in loaded_parms):
         # Create horizontal line
-        trailer_html += "<!-- document-text-trailer's horizontal line and anchor tag -->\n"
+        trailer_html += "<!-- For the document-text trailer: generate the horizontal line, and the anchor tag -->\n"
         trailer_html += "<br><br><br><hr>\n"
         # * Create an anchor tag.  Use the name attribute, with the value in DOCUMENT_TEXT_TRAILER_ANCHOR_NAME.
-        # * A hyperlink in the web-page header can use this name to link to the document-text-trailer.
+        # * A hyperlink in the web-page header-bar can use this name to link to the document-text-trailer.
         trailer_html += "<a name=\"" + DOCUMENT_TEXT_TRAILER_ANCHOR_NAME + "\"></a>\n"
         # Get the document-text-trailer's HTML that was specified in the parameter file
-        trailer_html += f"<!-- document-text-trailer's HTML. It's from the parameter-file, and key \"{KEY_DOCUMENT_TEXT_TRAILER}:\" -->\n"
+        trailer_html += f"<!-- For the document-text trailer:  the HTML specified in the parameter-file is inserted here: -->\n"
         trailer_html += loaded_parms[KEY_DOCUMENT_TEXT_TRAILER]
     # Jinja will be used to put trailer_html in the output HTML
     jinja_template_variables['document_text_trailer'] = trailer_html
@@ -1377,7 +1400,7 @@ def generate_html(parameter_file_path: str):
         toc_paragraphs.append(paragraph)
 
     num_toc_paragraphs = len(toc_paragraphs)
-    print("INFO.  Table-of-contents entries found: " + str(num_toc_paragraphs))
+    print("INFO.  Table-of-contents entries found, for use in the navigation pane: " + str(num_toc_paragraphs))
 
     '''
     * For the TOC-entry paragraphs found, move them from the "soup" BeautifulSoup object, 
@@ -1663,7 +1686,7 @@ def generate_html(parameter_file_path: str):
         new_style, substitution_count = re.subn(regex, substitution, style, 0, re.M)
         if (substitution_count != 1):
             print("")
-            print("ERROR.  Unexpected error, while fixing unordered-list list-items. ")
+            print("ERROR.  Unexpected error, while fixing unordered-list list-items.")
             print("        Regular-expression substitution failed, in setting text-indent to \"-.25in\"")
             print("        List-item HTML:")
             print(paragraph.decode(formatter='html'))
@@ -1715,7 +1738,7 @@ def generate_html(parameter_file_path: str):
         key_white_text_value = DO_NOT_REMOVE
 
     print("INFO.  Processing the span tags with attribute \"style\" and value \"color:white\".  ") 
-    print("       Processing-type used (as specified in the parameter-file): " + key_white_text_value)
+    print("       Processing-type used (specified via the parameter-file key \"white_colored_text\"): " + key_white_text_value)
 
     # * Get all of the span tags that have a style attribute, and the style attribute
     #   includes the value "color:white"
@@ -1753,8 +1776,8 @@ def generate_html(parameter_file_path: str):
                 if (substitution_count != 1):
                     print("")
                     print("ERROR.  Editing HTML span tags within a paragraph, having span attribute \"style\" and value \"color:white\".")
-                    print("ERROR.  For a span-tag, the regular-expression substitution failed in removing \"color:white\".")
-                    print("ERROR.  span-tag HTML:")
+                    print("        For a span-tag, the regular-expression substitution failed in removing \"color:white\".")
+                    print("        span-tag HTML:")
                     print("")
                     print(span.decode(formatter='html'))
                     return 1, num_warning_messages_g
@@ -1768,7 +1791,7 @@ def generate_html(parameter_file_path: str):
         num_warning_messages_g += 1
         print("")
         print("WARNING.  Span tag(s) found, with attribute \"style\" and value \"color:white\".")
-        print("          INFO messages provide details.")   
+        print("          INFO messages provide details.  Further info is in the system docs.")
         print("")    
 
     '''
@@ -1869,4 +1892,26 @@ if __name__ == "__main__":
     parsed_args = arg_parser.parse_args()
     parameter_file_path = parsed_args.parameter_file_path
 
+    # * If a parameter-file-path was not provided on the command-line,
+    #   then prompt for it
+    if parameter_file_path == None:
+        prompted_for_input = True
+        parameter_file_path = input("Enter parameter-file path: ").strip()
+        if parameter_file_path == "":
+            print("")
+            print("ERROR.  Parameter-file path not provided.")
+            print("")    
+            sys.exit()
+    else:
+        prompted_for_input = False
+
     main(parameter_file_path)
+
+    # * If the program was called by clicking on it, the command window will close 
+    #   when the program exits, and the program's messages will not be viewable.
+    # * Determining if the program was called by clicking on it is non-trivial,
+    #   so just check if the user was prompted for input.
+    if prompted_for_input == True:
+        print("")
+        input("Press any key to exit.")
+        print("")

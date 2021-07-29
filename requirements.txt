@@ -1,0 +1,8 @@
+# * List of required Python packages.
+# * The system-installation doc provides more info.
+beautifulsoup4
+cerberus
+jinja2
+pprintpp
+PyYAML
+yamllint

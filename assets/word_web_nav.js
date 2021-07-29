@@ -6,6 +6,10 @@ There are three functions.  They are run, respectively, when:
 * The splitter-bar is dragged
 * The web-browser is resized
 
+The code uses the jQuery and jQuery UI libraries.
+* https://jquery.com/
+* https://jqueryui.com/
+
 The system documentation has additional info on its: installation, use, design 
 and implementation (code).
 
@@ -96,7 +100,7 @@ $(function(){
            * Returns 2 values: <var>.left, <var>.top
            * These positions are relative to the whole browser window
              * offset.left is 0
-             * offset.top is 42 (height of the header div)
+             * offset.top is 42 (height of the header-bar div)
            * https://api.jquery.com/offset/
         */
         offset = $('#container').offset(),

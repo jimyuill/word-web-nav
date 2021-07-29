@@ -1,0 +1,14 @@
+# https://github.com/github/gitignore
+
+# Python
+# * https://github.com/github/gitignore/blob/master/Python.gitignore
+__pycache__/
+
+
+# Visual Studio Code
+# * https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
+.vscode/
+
+# MS Word
+~$*.doc*
+

@@ -1,0 +1,29 @@
+# DESCRIPTION:  Template for the parameter-file used by create_web_page.py, 
+#               showing the minimum set of parameters and example values.
+# 
+# * The parameter-file is in YAML format, and must conform to standard YAML syntax rules.
+#
+# * The system documentation has additional info on its: installation, use, design 
+#   and implementation (code).
+#
+# * YAML references
+#   * YAML Syntax: https://docs.ansible.com/ansible/latest/reference_appendices/YAMLSyntax.html
+#   * YAML Tutorial: https://www.tutorialspoint.com/yaml/index.htm
+#   * How to specify multi-line values, e.g., when specifying HTML
+#     * https://stackoverflow.com/questions/3790454/how-do-i-break-a-string-in-yaml-over-multiple-lines
+#
+# MIT License, Copyright (c) 2021-present Jim Yuill
+#
+
+# Specifies start of YAML data:
+---
+# Required parameters
+required:
+  # Parameter-file version
+  version: "1.0"
+  # Full path for the input Word HTML-file.  (Replace the example path.)
+  input_html_path: D:\quick-start\WordWebNav--Word-HTML\demo.html
+  # Full path for the directory for the output WordWebNav HTML-file.  (Replace the example path.)
+  output_directory_path: D:\quick-start\WordWebNav--HTML
+  # URL for the directory containing WordWebNav's CSS file and Javascript file.  (Replace the example URL.)
+  scripts_directory_url: D:\word-web-nav\assets
