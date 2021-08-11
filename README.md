@@ -4,9 +4,8 @@
 
 ## **Overview**
 WordWebNav (WWN) is an app that converts a Microsoft-Word document to a usable web-page.
+<br>
 WWN is free and open-source.
-
-The present web-page was created from a Word-doc using WWN.
 
 WWN's web-page features are described in the screen-shots below.  The features  include:
 - A document-text pane, with adjustable width, and support for user-comments at the bottom
@@ -24,7 +23,6 @@ WWN's web-page features are described in the screen-shots below.  The features  
 <br>
 
 - The comments section, at the bottom of the document-text pane (Commento is used here):
-<br>
 <br>
 <img border="0" height="538" src="readme-figure-2.png" width="937"/>
 
