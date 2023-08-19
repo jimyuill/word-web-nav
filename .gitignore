@@ -1,5 +1,6 @@
 # https://github.com/github/gitignore
 
+
 # Python
 # * https://github.com/github/gitignore/blob/master/Python.gitignore
 __pycache__/
@@ -8,7 +9,19 @@ __pycache__/
 # Visual Studio Code
 # * https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 .vscode/
+workspace.code-workspace
 
-# MS Word
-~$*.doc*
 
+# MS Word artifacts
+*.wbk
+Backup of *.wbk
+~$*.docx
+~*.tmp
+
+
+# Files describing repo contents, which are not for WWN users
+$docx-files-are-links.txt
+
+
+# WWN output folders
+WordWebNav--Word-HTML/

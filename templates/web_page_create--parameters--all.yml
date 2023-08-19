@@ -59,17 +59,11 @@ header_bar:
         # * Five types of contents are supported:  breadcrumbs, hyperlink, html, text, empty
         # * The contents-type is specified as a key under "contents:"
         # * The following is an example of navigation breadcrumbs, displayed as:
-        #   Home / Software / WWW / WordWebNav	
+        #   Home / WordWebNav	
         breadcrumbs:
           - hyperlink:
               text: Home
               url: /
-          - hyperlink:
-              text: Software 
-              url: /software
-          - hyperlink:
-              text: WWW
-              url: /software/www
           - hyperlink:
               text: WordWebNav
               url: /software/www/WordWebNav

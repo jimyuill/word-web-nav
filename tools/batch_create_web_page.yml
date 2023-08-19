@@ -1,0 +1,23 @@
+# This file is used by batch_create_web_page.py 
+# This is an example config-file. The file paths will need to be changed.
+#
+# Specifies start of YAML data:
+---
+# Required parameters
+required:
+  # Parameter-file version
+  version: "1.0"
+  # Full path for the input Word HTML-file.  (Replace the example path.)
+  # <!-- Jinja2: replace *inputHtmlPath* with the path for the input HTML-file -->  
+  input_html_path: {{inputHtmlPath}}
+  # Full path for the directory for the output WordWebNav HTML-file.  (Replace the example path.)
+  output_directory_path: D:\Documents\Professional-projects\Web-site-development\Word-to-HTML\automation-dev--and--WWN-testing\testing\test-Word-files\Other-Internet-Word-files\WordWebNav--HTML
+  # URL for the directory containing WordWebNav's CSS file and Javascript file.  (Replace the example URL.)
+  scripts_directory_url: D:\Documents\Professional-projects\Web-site-development\word-web-nav\word-web-nav_repo\assets
+
+# Specifies how the Word HTML is to be edited (Optional)
+word_html_edits:
+  # Specifies how the style "color:white" is to be removed from the Word HTML (optional).
+  # * Permissible values are:  doNotRemove, removeInParagraphs, removeAll
+  # * The default value is doNotRemove
+  white_colored_text: removeAll
