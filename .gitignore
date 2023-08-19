@@ -19,9 +19,5 @@ Backup of *.wbk
 ~*.tmp
 
 
-# Files describing repo contents, which are not for WWN users
-$docx-files-are-links.txt
-
-
-# WWN output folders
+# WWN folders
 WordWebNav--Word-HTML/

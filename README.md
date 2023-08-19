@@ -41,6 +41,6 @@ WWN is relatively easy to use.  First, a copy of the Word document is saved in W
 ## **Quality and support**
 WWN was created by a software professional, with over 25 years of R&D experience.  Background research was performed to investigate Word's limitations and bugs, and to survey alternative solutions.  The program code is heavily commented, to aid future development.  Extensive testing was performed, including unit and function tests. System-tests were performed using a variety of technical Word-docs, downloaded from the Internet. The created web-pages were tested on the major desk-top browsers and OS's. The end-user documentation is intended to be complete and easy to use.
 
-WWN's author uses it to construct his personal web-site.  He plans to fix the bugs he finds, and those reported by users, through 2021, and hopefully longer.
+WWN's author uses it to construct his personal web-site.  He plans to fix the bugs he finds, and those reported by users, through 2023, and hopefully longer.
 - [Report bugs and ideas for improvement](https://github.com/jimyuill/word-web-nav/issues)
 - [Contact the WWN author](https://jimyuill.com/about.html)
