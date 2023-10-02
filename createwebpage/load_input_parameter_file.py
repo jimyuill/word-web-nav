@@ -37,31 +37,30 @@ except ImportError as e:
     print("")    
     sys.exit()
 
-'''
-################
-# Function: load_input_parameter_file()
-
-Description:
-* Verifies the input parameter-file's syntax
-  * yamllint is used to verify the parameter-file's YAML syntax. 
-  * PyYAML's YAML-loader is used to load the parameter-file into a Python
-    object, made-up of dictionaries and lists.
-  * Cerberus is used to verify the parameter-file's syntax, using a schema.
-* Verifies the WordWebNav version that is specified in the parameter-file
-* The syntax verification is further described in the WWN development-documents.
-  The documents are:
-  * In the repo, under /docs/development-docs
-  * On the WWN web-site
-
-Parameter: parameter_file_path, specifies the input parameter-file's path
-
-Return
-* 1, None : Error
-* 0, loaded_parms : loaded_parms is a dictionary with the input parameter-file's
-                    contents
-################
-'''
 def load_input_parameter_file(parameter_file_path : str):
+    '''
+    Description:
+    * Loads the WWN input parameter-file, and verifies it
+    
+    Operation:
+    * Verifies the input parameter-file's syntax
+    * yamllint is used to verify the parameter-file's YAML syntax. 
+    * PyYAML's YAML-loader is used to load the parameter-file into a Python
+      object, made-up of dictionaries and lists.
+    * Cerberus is used to verify the parameter-file's syntax, using a schema.
+    * Verifies the WordWebNav version that is specified in the parameter-file
+    * The syntax verification is further described in the WWN development-documents.
+      The documents are:
+      * In the repo, under /docs/development-docs
+      * On the WWN web-site
+
+    Parameter: parameter_file_path, specifies the input parameter-file's path
+
+    Return
+    * 1, None : Error
+    * 0, loaded_parms : loaded_parms is a dictionary with the input parameter-file's
+                        contents
+    '''    
 
     '''
     ##################
@@ -73,13 +72,12 @@ def load_input_parameter_file(parameter_file_path : str):
 
     '''
     # The following are Cerberus schema-definitons, for the input parameter-file.
-    
       * The parameter-file is in YAML formt.
       * The parameter-file is validated by calling Cerberus.
       * These schema-definitions are used by Cerberus, to validate the parameter-file.
 
       * These schema-definitons specify the parameter-file's structure, keys, and values.
-      * The parameter-file is specified and described in the system documentation.
+      * The parameter-file is described in the system documentation.
       * These schema-definitons specify the parameter-file syntax that is described in the 
         system documentation.
       * Since Cerberus is used to validate the parameter-file, the WWN code that processes the parameter-file

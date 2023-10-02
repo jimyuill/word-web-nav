@@ -13,25 +13,22 @@ import os
 # Specifies the YAML keys for the input parameter-file
 from input_parameter_file_keys import *
 
-'''
-#####################
-# Function: copy_words_embedded_files()
-#
-# Description:
-# * Copy Word's embedded-files-directory to the output directory
-# * For a Word-HTML-file, Word will create a directory to hold embedded files, such as pictures.
-#   * That directory will be referred to as the "embedded-files directory".
-#   * For the embedded-files directory, its name is the same as the Word-HTML-file, but with a suffix "_files"
-#     * e.g., for index.html, the embedded-files directory is index_files
-#
-# Parameter: loaded_parms, contains the input paramter-file, in dictionary format
-#
-# Return:
-# 0 : OK
-# 1 : Error
-#####################
-'''
+
 def copy_words_embedded_files(loaded_parms):
+    '''
+    Description:
+    * Copy Word's embedded-files-directory to the output directory
+    * For a Word-HTML-file, Word will create a directory to hold embedded files, such as pictures.
+      * That directory will be referred to as the "embedded-files directory".
+      * For the embedded-files directory, its name is the same as the Word-HTML-file, but with a suffix "_files"
+        * e.g., for index.html, the embedded-files directory is index_files
+    
+    Parameter: loaded_parms, contains the input paramter-file, in dictionary format
+    
+    Return:
+    0 : OK
+    1 : Error
+    '''    
     
     # Get the relevant values specified in the input parameter-file
     input_html_path_value = loaded_parms[YML_KEY_REQUIRED][YML_KEY_INPUT_HTML_PATH]

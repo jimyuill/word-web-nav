@@ -1,9 +1,9 @@
 '''
 ################
-This file contains the function: fix_word_html()
-The function is called by: create_web_page_core() in create_web_page.py
+* Module with function: fix_word_html()
+* Called by: create_web_page_core() in create_web_page.py
 
-This file also contains these local functions:
+Local functions:
 * fix_unordered_list_items()
 * test_if_span_with_only_spaces()
 
@@ -24,7 +24,6 @@ import os
 # Specifies the YAML keys for the input parameter-file
 from input_parameter_file_keys import *
 
-# This library needs to have been installed by the user
 try:
     # BeautifulSoup:  pip install beautifulsoup4
     from bs4 import BeautifulSoup, NavigableString, Tag
@@ -40,26 +39,9 @@ except ImportError as e:
 
 """
 ##################
-* Define:
-  * Constants
-  * html_entity_encodings_g : 
-    * A global-variable (a dictionary) that is used in fixing particular Word-HTML bugs.
-    * These are bugs in ordered-lists and unordered-lists.
-  
-* Naming convention:
-  * FIX_ : prefix for global constants defined in this file
-  * FIX_KEY_ : prefix for dictionary keys
-  * _g : suffix for the global variable
+* Global constants, used in the dictionary html_entity_encodings
 ##################
 """
-
-'''
-* Among the Word-HTML bugs that are fixed, some of the bugs are fixed by replacing a 
-  particular string within an HTML paragraph.
-  * The replacement process is the same for each of those bugs, but the data differs.
-  * The replacement process is coded within two functions: fix_unordered_list_items() and generate_html().
-  * The data used by those replacement-processes is defined here.
-'''
 
 # Defines the keys used in the dictionary HTML_ENTITY_ENCODING_SPECS
 FIX_KEY_DESCRIPTION = "description"
@@ -75,76 +57,32 @@ HTML_ENTITY_ENCODING_SPECS = {
     FIX_KEY_NUMBER_ENCODED: 0  # Variable, specifies the number of instances of the fix
 }
 
-# Defines the top-level keys used in the dictionary html_entity_encodings_g
+# Defines the top-level keys used in the dictionary html_entity_encodings
 FIX_KEY_SOLID_DOT_BULLET = "solid_dot_bullet"
 FIX_KEY_SOLID_SQUARE_BULLET = "solid_square_bullet"
 FIX_KEY_LETTER_O_BULLET = "letter_o_bullet"
 FIX_KEY_SIX_NBSPS = "six_nbsps"
 
-# Defines some tags that are used in the dictionary html_entity_encodings_g
-# * The fixes to the Word-HTML involve replacing HTML strings with particular
+# Defines HTML tags that are used in the dictionary html_entity_encodings
+# * The fixes to the Word-HTML involves replacing HTML strings with particular
 #   HTML entities.
 # * Those replacement HTML-entities are put inside script opening and closing tags,
 #   which are defined here.
 FIX_SCRIPT_OPENING_TAG = "<script type=\"word_web_page_nav\">"
 FIX_SCRIPT_CLOSING_TAG = "</script>"
 
-# * html_entity_encodings_g is a dictionary.
-#   * The suffix "_g" indicates the dictionary is a global variable.
-#   * Each entry specifies the HTML used to fix a particular bug in
-#     the Word-HTML.
-#   * Each entry's value is itself a dictionary.  
-#     * The value is initialized to be a copy of HTML_ENTITY_ENCODING_SPECS.
-html_entity_encodings_g = {
-    FIX_KEY_SOLID_DOT_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
-    FIX_KEY_SOLID_SQUARE_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
-    FIX_KEY_LETTER_O_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
-    FIX_KEY_SIX_NBSPS: HTML_ENTITY_ENCODING_SPECS.copy()
-}
 
-# Fix for solid-dot bullet-symbols
-html_entity_encodings_g[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_DESCRIPTION] = \
-    "solid-dot bullet-symbols (used in levels 1,4,7)"
-html_entity_encodings_g[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_ENCODE] = \
-    FIX_SCRIPT_OPENING_TAG + "&#9679;" + FIX_SCRIPT_CLOSING_TAG   
-html_entity_encodings_g[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_DECODE] = "&#9679;"
-
-# Fix for solid-square bullet-symbols
-html_entity_encodings_g[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_DESCRIPTION] = \
-    "solid-square bullet-symbols (used in levels 3,6,9)"
-html_entity_encodings_g[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_ENCODE] = \
-    FIX_SCRIPT_OPENING_TAG + "&#9632;" + FIX_SCRIPT_CLOSING_TAG   
-html_entity_encodings_g[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_DECODE] = "&#9632;"
-
-# For letter "o" bullet-symbols, specify no fix is needed for the bullet-symbol
-html_entity_encodings_g[FIX_KEY_LETTER_O_BULLET][FIX_KEY_DESCRIPTION] = \
-    "letter \"o\" bullet-symbols (used in levels 2,5,8)"
-html_entity_encodings_g[FIX_KEY_LETTER_O_BULLET][FIX_KEY_ENCODE] = ""   
-html_entity_encodings_g[FIX_KEY_LETTER_O_BULLET][FIX_KEY_DECODE] = ""
-
-# Fix for spacing after a bullet-symbol (unordered list), or list-item symbol (ordered-list).
-html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_DESCRIPTION] = "list-item spacing"
-html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE] = \
-    FIX_SCRIPT_OPENING_TAG + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FIX_SCRIPT_CLOSING_TAG   
-html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_DECODE] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
-
-
-'''
-##############
-# Function: test_if_span_with_only_spaces()
-
-* This is a local function, called by:
-  * fix_word_html()
-  * fix_unordered_list_items()
-
-Description
-* For the input HTML-elemement, determine if it is a span-tag with
-  a single string made-up of only spaces
-  
-Returns True or False
-##############
-'''
 def test_if_span_with_only_spaces(element):
+    ''' 
+    For the input HTML-elemement, determine if it is a span-tag with
+    a single string made-up of only spaces
+
+    Local function, called by:
+    * fix_word_html()
+    * fix_unordered_list_items()
+    
+    Returns True or False
+    '''
     # Have to use .decode() to get the "&nbsp;"s
     if ( isinstance(element, Tag) and (element.name == "span") and
        ('style' in element.attrs) and (len(element.contents) == 1) ):
@@ -156,72 +94,63 @@ def test_if_span_with_only_spaces(element):
             return True
 
     return False
-# END OF:  def test_if_span_with_only_spaces()
+# END OF: test_if_span_with_only_spaces()
 
 
-'''
-###########################
-# Function: fix_unordered_list_items()
-
-* This is a local function, called by: fix_word_html()
-
-Description:
-* This function fixes commonly-found bugs in Word-HTML, for unordered-lists.
-
-Parameters:
-* word_list_item_list : a Python list, holds candidate Word list-items
-* font_family : used in specifying the bullet-symbol of the list-items to be fixed
-* symbol : used in specifying the bullet-symbol of the list-items to be fixed
-* html_entity_encodings_key : the HTML for fixing the bullet-symbol, if it needs to be fixed
-
-Global variable: html_entity_encodings_g
-
-Return:
-* word_list_item_list : Fixed list-items are removed from word_list_item_list.
-* html_entity_encodings_g : Stats are recorded for fixed list-items
-    
-###########################
-'''
-
-'''
-This function fixes commonly-found bugs in Word-HTML, for unordered-lists.
-
-* Terminology
-  * An unordered list is made-up of list-items.
-    * For the list-items, three types of bullet-symbols are typically used:
-      * solid-dot, solid-square, and the letter "o"
-
-* The function's parameters specify:
-  * The bullet-symbol of the list-item to be fixed, e.g., a round dot
-    * It's specified by the parameters "font_family" and "symbol"
-  * The HTML needed to fix the bullet-symbol, if it needs to be fixed.
-    * The parameter "html_entity_encodings_key" is a key for the dictionary html_entity_encodings_g.
-    * In the dictionary, that key's value has the HTML for fixing the bug.
-      If no fix is needed, the empty string is specified.
-
-* The function examines each candidate Word list-item in the Python list "word_list_item_list".
-  * A candidate list-item could be a list-item, but additional examination is needed to confirm that.
-  * In HTML, a list-item is specified as a paragraph (<p ...> ... </p>)
-  * If a list-item is for an unordered-list, and it has the specified bullet-symbol, 
-    then the list-item's HTML is edited, to fix its bugs.
-
-* The bug-fixes just described involve replacing HTML strings with HTML entities.
-  * The replacements are done in the BeautifulSoup HTML.
-  * During the replacement, BeautifulSoup itself can potentially alter those HTML entities,
-    in undesirable ways.
-  * To prevent BeautifulSoup from making those alternations, the replacement HTML entities
-    are put insides of an HTML <script> tag, e.g., <script>[replacement HTML entities]</script>.
-  * Later in fix_word_html(), the BeautifulSoup HTML will be converted to HTML text.  
-    Those added opening and closing script tags will be removed then, from the HTML text.
-
-* The Word-HTML bugs, and their fixes, are further described in the WWN development-documents.
-'''
-def fix_unordered_list_items(word_list_item_list, 
+def fix_unordered_list_items(html_entity_encodings, 
+                             word_list_item_list, 
                              font_family: str, 
                              symbol: str, 
                              html_entity_encodings_key: str):
+    ''' 
+    Fixes commonly-found bugs in Word-HTML, for unordered-lists.
 
-    global html_entity_encodings_g
+    Local function, called by: fix_word_html()
+
+    Parameters:
+    * html_entity_encodings : dictionary, each entry specifies the HTML used to fix
+                              a particular bug in the Word-HTML
+    * word_list_item_list : a Python list, holds candidate Word list-items
+    * font_family : used in specifying the bullet-symbol of the list-items to be fixed
+    * symbol : used in specifying the bullet-symbol of the list-items to be fixed
+    * html_entity_encodings_key : the HTML for fixing the bullet-symbol, if it needs to be fixed
+
+    Return:
+    * html_entity_encodings : Stats are recorded for fixed list-items
+    * word_list_item_list : Fixed list-items are removed from word_list_item_list.
+    '''
+
+    '''
+    * Terminology
+      * An unordered list is made-up of list-items.
+        * For the list-items, three types of bullet-symbols are typically used:
+          * solid-dot, solid-square, and the letter "o"
+
+    * The function's parameters specify:
+      * The bullet-symbol of the list-item to be fixed, e.g., a round dot
+        * It's specified by the parameters "font_family" and "symbol"
+      * The HTML needed to fix the bullet-symbol, if it needs to be fixed.
+        * The parameter "html_entity_encodings_key" is a key for the dictionary html_entity_encodings.
+        * In the dictionary, that key's value has the HTML for fixing the bug.
+          If no fix is needed, the empty string is specified.
+
+    * The function examines each candidate Word list-item in the Python list "word_list_item_list".
+      * A candidate list-item could be a list-item, but additional examination is needed to confirm that.
+      * In HTML, a list-item is specified as a paragraph (<p ...> ... </p>)
+      * If a list-item is for an unordered-list, and it has the specified bullet-symbol, 
+        then the list-item's HTML is edited, to fix its bugs.
+
+    * The bug-fixes just described involve replacing HTML strings with HTML entities.
+      * The replacements are done in the BeautifulSoup HTML.
+      * During the replacement, BeautifulSoup itself can potentially alter those HTML entities,
+        in undesirable ways.
+      * To prevent BeautifulSoup from making those alternations, the replacement HTML entities
+        are put insides of an HTML <script> tag, e.g., <script>[replacement HTML entities]</script>.
+      * Later in fix_word_html(), the BeautifulSoup HTML will be converted to HTML text.  
+        Those added opening and closing script tags will be removed then, from the HTML text.
+
+    * The Word-HTML bugs, and their fixes, are further described in the WWN development-documents.
+    '''
 
     list_elements_to_remove = []
 
@@ -272,14 +201,14 @@ def fix_unordered_list_items(word_list_item_list,
         Make needed fixes to the HTML
         '''
 
-        # Replace the bullet symbol, if needed, using the HTML defined in html_entity_encodings_g
-        if (html_entity_encodings_g[html_entity_encodings_key][FIX_KEY_ENCODE] != ""):
+        # Replace the bullet symbol, if needed, using the HTML defined in html_entity_encodings
+        if (html_entity_encodings[html_entity_encodings_key][FIX_KEY_ENCODE] != ""):
             first_string.replace_with(
-                BeautifulSoup(html_entity_encodings_g[html_entity_encodings_key][FIX_KEY_ENCODE],
+                BeautifulSoup(html_entity_encodings[html_entity_encodings_key][FIX_KEY_ENCODE],
                             'html.parser') )
             symbol_replace_count += 1
         
-        # Replace the "&nbsp;"s, using the HTML defined in html_entity_encodings_g
+        # Replace the "&nbsp;"s, using the HTML defined in html_entity_encodings
         '''        
         For list-items that use common bullet-symbols, there is an additional bug in the Word HTML.
           * Word puts "&nbsp;" entities after the bullet-symbol, to provide spacing between the 
@@ -288,7 +217,7 @@ def fix_unordered_list_items(word_list_item_list,
             a visibly misaligned unordered-list.
           * The problem is fixed by replacing the "&nbsp;"'s with six "&nbsp"'s.
         '''
-        second_string.replace_with(BeautifulSoup(html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE],
+        second_string.replace_with(BeautifulSoup(html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE],
                             'html.parser') )
         
         # The HTML paragraph has been fixed.  Its index in word_list_item_list is recorded.
@@ -303,66 +232,105 @@ def fix_unordered_list_items(word_list_item_list,
         del word_list_item_list[i]
 
     print("INFO.  Editing the Word-HTML.  Fixing list-items with " +
-          html_entity_encodings_g[html_entity_encodings_key][FIX_KEY_DESCRIPTION] + 
+          html_entity_encodings[html_entity_encodings_key][FIX_KEY_DESCRIPTION] + 
           "  Number of list-items found: " +  str(bullets_fixed_count) )
     # Record stats for fixes
-    html_entity_encodings_g[html_entity_encodings_key][FIX_KEY_NUMBER_ENCODED] = symbol_replace_count
-    html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_NUMBER_ENCODED] += bullets_fixed_count
-# END OF:  def fix_unordered_list_items()
+    html_entity_encodings[html_entity_encodings_key][FIX_KEY_NUMBER_ENCODED] = symbol_replace_count
+    html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_NUMBER_ENCODED] += bullets_fixed_count
+# END OF: fix_unordered_list_items()
 
 
-'''
-#############
-# Function fix_word_html()
-
-Description:
-* Fix bugs in Word's HTML
-
-Parameters:
-* loaded_parms : a dictionary with the input parameter-file's contents
-* jinja_template_variables : the jinja-template object
-* body_inner_html : The HTML from the <body> section in Word's HTML,
-                    but with these parts removed:
-                    * <body> opening and closing tags
-                    * The table-of-contents
-* num_warning_messages : counter
-
-Calls local functions:
-* fix_unordered_list_items()
-* test_if_span_with_only_spaces()
-
-Return:
-* 1, None : error
-
-* 0, num_warning_messages : OK
-  * The objects returned 
-    * Objects passed as parameters:
-      * loaded_parms : not changed
-      * jinja_template_variables : added the document-text's HTML, with the fixes applied    
-      * body_inner_html : contents not specified (no longer used)
-      
-The Word-HTML bugs, and their fixes, are further described in the WWN development-documents.
-The documents are:
-* In the repo, under /docs/development-docs
-* On the WWN web-site
-#############
-'''
-
-'''
-  * Word's HTML has several bugs. This function fixes those bugs, if present.
-  * The bugs are fixed by editing the HTML.
-    * The HTML is in the BeautifulSoup object "body_inner_html".
-      * body_inner_html has the HTML from the <body> section in Word's HTML, 
-        but with the outer <body...> tags removed, and the table-of-contents removed
-
-  * The Word-HTML bugs fixed are:
-    * Formatting problems in bulleted lists (unordered lists)
-    * Formatting problems in ordered lists
-    * Text whose color is incorrectly set to be white
-'''
 def fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_warning_messages):
+    ''' 
+    Fix bugs in Word's HTML
 
-    global html_entity_encodings_g
+    Parameters:
+    * loaded_parms : a dictionary with the input parameter-file's contents
+    * jinja_template_variables : the jinja-template object
+    * body_inner_html : The HTML from the <body> section in Word's HTML,
+                        but with these parts removed:
+                        * <body> opening and closing tags
+                        * The table-of-contents
+    * num_warning_messages : counter
+
+    Calls local functions:
+    * fix_unordered_list_items()
+    * test_if_span_with_only_spaces()
+
+    Return:
+    * 1, None : error
+
+    * 0, num_warning_messages : OK
+      * The objects returned 
+        * Objects passed as parameters:
+          * loaded_parms : not changed
+          * jinja_template_variables : added the document-text's HTML, with the fixes applied    
+          * body_inner_html : contents not specified (no longer used)
+          
+    The Word-HTML bugs, and their fixes, are further described in the WWN development-documents.
+    The documents are:
+    * In the repo, under /docs/development-docs
+    * On the WWN web-site
+    #############
+    '''
+
+    '''
+    * Word's HTML has several bugs. This function fixes those bugs, if present.
+    * The bugs are fixed by editing the HTML.
+      * The HTML is in the BeautifulSoup object "body_inner_html".
+        * body_inner_html has the HTML from the <body> section in Word's HTML, 
+          but with the outer <body...> tags removed, and the table-of-contents removed
+
+    * The Word-HTML bugs fixed are:
+      * Formatting problems in bulleted lists (unordered lists)
+      * Formatting problems in ordered lists
+      * Text whose color is incorrectly set to be white
+  
+    * Among the Word-HTML bugs that are fixed, some of the bugs are fixed by replacing a 
+      particular string within an HTML paragraph.
+      * The replacement process is the same for each of those bugs, but the data differs.
+      * The replacement process is coded within the present function and within fix_unordered_list_items().
+      * The data used by those replacement-processes is defined here.
+    '''
+    
+    # * html_entity_encodings:
+    #   * Each entry specifies the HTML used to fix a particular bug in
+    #     the Word-HTML.
+    #   * Each entry's value is itself a dictionary.  
+    #     * The value is initialized to be a copy of HTML_ENTITY_ENCODING_SPECS.
+    html_entity_encodings = {
+        FIX_KEY_SOLID_DOT_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
+        FIX_KEY_SOLID_SQUARE_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
+        FIX_KEY_LETTER_O_BULLET: HTML_ENTITY_ENCODING_SPECS.copy(),
+        FIX_KEY_SIX_NBSPS: HTML_ENTITY_ENCODING_SPECS.copy()
+    }
+
+    # Fix for solid-dot bullet-symbols
+    html_entity_encodings[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_DESCRIPTION] = \
+        "solid-dot bullet-symbols (used in levels 1,4,7)"
+    html_entity_encodings[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_ENCODE] = \
+        FIX_SCRIPT_OPENING_TAG + "&#9679;" + FIX_SCRIPT_CLOSING_TAG   
+    html_entity_encodings[FIX_KEY_SOLID_DOT_BULLET][FIX_KEY_DECODE] = "&#9679;"
+
+    # Fix for solid-square bullet-symbols
+    html_entity_encodings[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_DESCRIPTION] = \
+        "solid-square bullet-symbols (used in levels 3,6,9)"
+    html_entity_encodings[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_ENCODE] = \
+        FIX_SCRIPT_OPENING_TAG + "&#9632;" + FIX_SCRIPT_CLOSING_TAG   
+    html_entity_encodings[FIX_KEY_SOLID_SQUARE_BULLET][FIX_KEY_DECODE] = "&#9632;"
+
+    # For letter "o" bullet-symbols, specify no fix is needed for the bullet-symbol
+    html_entity_encodings[FIX_KEY_LETTER_O_BULLET][FIX_KEY_DESCRIPTION] = \
+        "letter \"o\" bullet-symbols (used in levels 2,5,8)"
+    html_entity_encodings[FIX_KEY_LETTER_O_BULLET][FIX_KEY_ENCODE] = ""   
+    html_entity_encodings[FIX_KEY_LETTER_O_BULLET][FIX_KEY_DECODE] = ""
+
+    # Fix for spacing after a bullet-symbol (unordered list), or list-item symbol (ordered-list).
+    html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_DESCRIPTION] = "list-item spacing"
+    html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE] = \
+        FIX_SCRIPT_OPENING_TAG + "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + FIX_SCRIPT_CLOSING_TAG   
+    html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_DECODE] = "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+
 
     '''
     #####################
@@ -407,24 +375,42 @@ def fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_w
     Fix the list-items in unordered-lists
     ######################
     '''
+    '''
+    Encoding for symbols:
+    * Apparently, my editor changes the following symbols from 1-byte encoding to 2-byte encoding:
+      * Solid-dot bullet symbols, changed to "Â·"
+      * Solid-square bullet symbols, changed to ""Â§"
+    
+    * In both cases, the "Â" character was added.
+    * Perhaps the change was due to the editor using UTF-8 encoding.
+    * In the call to fix_unordered_list_items(), the 2-byte encoding for the symbol
+      does not match the intended symbol in the HTML file.
+
+    * So, in the calls to fix_unordered_list_items(), the ASCII value is specified for these symbols.
+      * For example:  symbol=chr(183),
+    '''
+
     # Fix solid-dot bullet symbols, and their spacing
     # * Word's solid-dot bullet is not displayed properly by Firefox.
     #   * It is replaced here by the HTML solid-dot symbol "&#9679;"
-    fix_unordered_list_items(word_list_item_list,
+    fix_unordered_list_items(html_entity_encodings,
+                          word_list_item_list,
                           font_family="Symbol",
-                          symbol="Â·",
+                          symbol=chr(183),
                           html_entity_encodings_key=FIX_KEY_SOLID_DOT_BULLET)
 
     # Fix solid-square bullet symbols, and their spacing
     # * Word's solid-square bullet is not displayed properly by Firefox.
     #   * It is replaced here by the HTML solid-square symbol "&#9632;"
-    fix_unordered_list_items(word_list_item_list,
+    fix_unordered_list_items(html_entity_encodings,
+                          word_list_item_list,
                           font_family="Wingdings",
-                          symbol="Â§",
+                          symbol=chr(167),
                           html_entity_encodings_key=FIX_KEY_SOLID_SQUARE_BULLET)
 
     # Fix the spacing for the letter-"o" bullet symbols
-    fix_unordered_list_items(word_list_item_list,
+    fix_unordered_list_items(html_entity_encodings,
+                          word_list_item_list,
                           font_family='"Courier New"',
                           symbol="o",
                           html_entity_encodings_key=FIX_KEY_LETTER_O_BULLET)
@@ -554,9 +540,9 @@ def fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_w
         # * Replace the post-symbol spaces with the correct number of spaces (&nbsp;)
         # * The spaces are enclosed in a script tag, as was done in fixing unordered-lists.
         ending_span_with_only_spaces.contents[0].replace_with(
-            BeautifulSoup(html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE],
+            BeautifulSoup(html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_ENCODE],
                         'html.parser') )
-        html_entity_encodings_g[FIX_KEY_SIX_NBSPS][FIX_KEY_NUMBER_ENCODED] += 1
+        html_entity_encodings[FIX_KEY_SIX_NBSPS][FIX_KEY_NUMBER_ENCODED] += 1
         
         # * Pre-symbol-spaces are within a span tag.
         # * If there are pre-symbol-spaces, delete the whole span tag.
@@ -674,7 +660,7 @@ def fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_w
         num_warning_messages += 1
         print("")
         print("WARNING.  Span tag(s) found, with attribute \"style\" and value \"color:white\".")
-        print("          INFO messages provide details.  Further info is in the system docs.")
+        print("          INFO messages provide details.  Further info is in the WWN docs.")
         print("")    
 
 
@@ -691,47 +677,38 @@ def fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_w
     generated_html = body_inner_html.decode(formatter='html')
 
     '''
-    * If any HTML fixes were within a script tag, the script opening-tag and closing-tag 
+    * If any HTML fixes are within a script tag, the script opening-tag and closing-tag 
       is removed from the HTML text
     '''
     # * When the HTML was edited, if HTML entities were added (e.g., &nbsp;), they were put inside of
     #   a script tag.  This prevented BeautifulSoup from altering the HTML entities.
     # * The script opening-tags and closing-tags are removed, using reg-ex substitution.
-    #
-    # * html_entity_encodings_g is a dictionary, and it was described earlier.
-    #   * Each dictionary-entry specifies the HTML used to fix a particular bug in
-    #     the Word-HTML.
-    #   * Each dictionary-entry itself has a dictionary (defined by HTML_ENTITY_ENCODING_SPECS), and 
-    #     that dictionary's entries include the info needed for removing the script opening-tags and 
-    #     closing-tags.
-    #
-    # Loop for each entry in html_entity_encodings_g
-    for key in html_entity_encodings_g:
+    # * html_entity_encodings was described earlier.
+    
+    # Loop for each entry in html_entity_encodings
+    for key in html_entity_encodings:
         # Test if new HTML was added for this HTML-fix
-        if html_entity_encodings_g[key][FIX_KEY_NUMBER_ENCODED] != 0:
+        if html_entity_encodings[key][FIX_KEY_NUMBER_ENCODED] != 0:
             # The new-HTML is specified by the entry FIX_KEY_ENCODE.  
             # * This HTML includes the script opening-tag and closing-tag
-            regex = html_entity_encodings_g[key][FIX_KEY_ENCODE]
+            regex = html_entity_encodings[key][FIX_KEY_ENCODE]
             # * The new-HTML, without the script opening-tag and closing-tag, is specified by the 
             #   entry FIX_KEY_DECODE 
-            substitution = html_entity_encodings_g[key][FIX_KEY_DECODE]
+            substitution = html_entity_encodings[key][FIX_KEY_DECODE]
             # Use a reg-ex to replace the new-HTML, and remove the script opening-tag and closing-tag.
             generated_html, substitution_count = re.subn(regex, substitution, generated_html, 0)
-            if substitution_count != html_entity_encodings_g[key][FIX_KEY_NUMBER_ENCODED]:
+            if substitution_count != html_entity_encodings[key][FIX_KEY_NUMBER_ENCODED]:
                 print("")
-                print("ERROR.  Decoding the " + html_entity_encodings_g[key][FIX_KEY_DESCRIPTION] +
+                print("ERROR.  Decoding the " + html_entity_encodings[key][FIX_KEY_DESCRIPTION] +
                     ".  Number decoded (%s) is not equal to the number encoded (%s)."  
-                    % (substitution_count, html_entity_encodings_g[key][FIX_KEY_NUMBER_ENCODED]))
+                    % (substitution_count, html_entity_encodings[key][FIX_KEY_NUMBER_ENCODED]))
                 return 1, num_warning_messages
-            print("INFO.  Decoding the " + html_entity_encodings_g[key][FIX_KEY_DESCRIPTION])
+            print("INFO.  Decoding the " + html_entity_encodings[key][FIX_KEY_DESCRIPTION])
 
     # * generated_html has the document-text's HTML, with the fixes applied.
     # * Later, Jinja will be used to put generated_html in the output HTML
     jinja_template_variables['document_text'] = generated_html
 
-    ##############
-    # Return
-    ##############
     return 0, num_warning_messages
 
-# END OF: def fix_word_html()
+# END OF: fix_word_html()

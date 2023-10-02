@@ -17,8 +17,6 @@ import os
 from os import listdir
 from os.path import isfile, join
 
-from importlib import reload
-
 sys.path.append(r'..\createwebpage')
 import create_web_page
 
@@ -74,8 +72,6 @@ if __name__ == "__main__":
         '''
         Call create_web_page.main(), pass it the path to the yml-file
         '''
-        # Reload needed to refresh the global variables in create_web_page()
-        reload(create_web_page)
         return_value, num_warning_messages = create_web_page.create_web_page(yml_file_path)
         if return_value == 1:
             failed_file_count += 1

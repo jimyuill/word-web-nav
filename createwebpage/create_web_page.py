@@ -16,14 +16,13 @@ USAGE:
   * Parameter-file templates are provided in the WWN repo.
 
 USAGE: 
-* Calling from a Python module
-  * Call: create_web_page()
-  * If create_web_page() is called more than once, a reload is needed:
-    import create_web_page
-      # Reload needed to refresh the global variables
-      reload(create_web_page)
-      return_value, num_warning_messages = create_web_page.create_web_page(wwn_input_parameter_file_path)
+* Calling from a Python module:
+  * Call: create_web_page(parameter_file_path)
+    * parameter_file_path: full-path of the input parameter-file
 
+DOCUMENTATION:
+* The call-graph for this Python package is in the repo at: 
+  * createwebpage\$package-contents.docx
 * WWN's documentation is on the WWN web-page, and in the repo under /docs.
   The documentation includes:
   * WWN's introduction, installation and use
@@ -37,7 +36,6 @@ MIT License, Copyright (c) 2021-present Jim Yuill
 # Python pre-installed libraries
 import argparse
 import sys
-import importlib
 
 # Modules in this package
 # * To import modules from this package, code was added to __init__.py
@@ -46,12 +44,7 @@ from load_html_files import load_html_files
 from copy_words_embedded_files import copy_words_embedded_files
 from construct_html_sections import construct_html_sections
 import fix_word_html
-# * fix_word_html needs to be reloaded for the case of create_web_page() being
-#   called from another Python module.
-# * The reload is needed due to fix_word_html using a global variable.
-importlib.reload(fix_word_html)
 
-# This library needs to have been installed by the user
 try:
     # Jinja2:  pip install jinja2
     from jinja2 import Template
@@ -66,28 +59,25 @@ except ImportError as e:
     sys.exit()
 
 
-'''
-################
-# Function: create_web_page_core()
-
-* Description: 
-  * This is WWN's primary function.
-  * This function reads the input parameter-file, and creates the WWN web-page.
-  * This function is called by the wrapper-function create_web_page().
-  
-* Input:
-  * parameter_file_path: the input parameter-file's full-path
-  * num_warning_messages: the number of warning messages, thus far
-* Return:
-  * 1, num_warning_messages
-  * 0, None
-#################
-'''
 def create_web_page_core(parameter_file_path: str,
                          num_warning_messages: int):
+    '''
+    * Description: 
+      * This is WWN's primary function:
+        * It reads the input parameter-file, and creates the WWN web-page.
+        * It is called by the wrapper-function create_web_page().
     
-    # Check Python version 3
-    # * Works with Python 2.6 and below:
+    * Input:
+      * parameter_file_path: the input parameter-file's full-path
+      * num_warning_messages: the number of warning messages, thus far
+
+    * Return:
+      * 1, num_warning_messages : An error occurred
+      * 0, num_warning_messages : No errors occurred
+    '''
+    
+    # Check Python is at least version 3
+    # * This check works with Python 2.6 and below:
     #   * https://stackoverflow.com/questions/446052/how-can-i-check-for-python-version-in-a-program-that-uses-new-language-features
     if sys.version_info[0] < 3:
         print("")
@@ -129,9 +119,7 @@ def create_web_page_core(parameter_file_path: str,
     # * The functions are in separate files
     ####################
 
-    #
-    # Call load_input_parameter_file()
-    #
+    # load_input_parameter_file():
     # * The input parameter-file is in YAML format
     # * The file's contents are verified and loaded into a Python
     #   object, made-up of dictionaries and lists.
@@ -140,22 +128,19 @@ def create_web_page_core(parameter_file_path: str,
     if (return_value == 1):
         return 1, num_warning_messages
  
-    #
-    # Call load_html_files()
-    #
+    # load_html_files():
     # * Verifies the HTML-related input-files, and the output directory
-    # * Returns 4 objects and a string variable, which are described below.
     return_value, returned_objects_dict = load_html_files(loaded_parms)
     if (return_value == 1):
         return 1, num_warning_messages
     else:
-        # Data is returned in the dictionary returned_objects_dict[]
+        # Data returned in returned_objects_dict:
         
         # The Jinja template is loaded from a file, and returned in jinja_template
         # * jinja_template is a jinja2 object, created by calling jinja2.Template() 
         jinja_template = returned_objects_dict["jinja_template"]
         
-        # The input Word HTML-file is loaded, and it is returned in BeautifulSoup objects:
+        # The input Word HTML-file was loaded, and it is returned in BeautifulSoup objects:
         #
         # head is a BeautifulSoup object
         # * It holds the <head> element from the input HTML-file
@@ -164,13 +149,11 @@ def create_web_page_core(parameter_file_path: str,
         # * It holds the <body> element from the input HTML-file
         body = returned_objects_dict["body"]
         
-        # The output HTML-file is created, and it is currently empty:
+        # The output HTML-file was created, and it is currently empty:
         output_html_file_path = returned_objects_dict["output_html_file_path"]
         output_html_file_handle = returned_objects_dict["output_html_file_handle"]
     
-    #
-    # Call copy_words_embedded_files()
-    #
+    # copy_words_embedded_files():
     # * Copies Word's embedded files
     # * If the input Word HTML-file has embedded-files, they are copied to 
     #   the output directory
@@ -178,26 +161,22 @@ def create_web_page_core(parameter_file_path: str,
     if (return_value == 1):
         return 1, num_warning_messages
 
-    #
-    # Call construct_html_sections()
-    #
+    # construct_html_sections():
     # * Constructs the output HTML-sections, and puts them in:
     #   * BeautifulSoup object: body_inner_html
     #   * The dictionary jinja_template_variables
-    return_value, body_inner_html = construct_html_sections(loaded_parms, jinja_template_variables, head, body)
+    return_value, body_inner_html = construct_html_sections(loaded_parms, 
+                                        jinja_template_variables, head, body)
     if (return_value == 1):
         return 1, num_warning_messages
 
-    #
-    # Call fix_word_html()
-    #
+    # fix_word_html():
     # * Fixes a set of known bugs in Word's HTML
-    #
-    # * Parameters:
-    #   * Input:  loaded_parms, jinja_template_variables, body_inner_html, num_warning_messages
-    #   * Output:
-    #     * jinja_template_variables : the document-text's HTML is added, with the fixes applied
-    return_value, num_warning_messages = fix_word_html.fix_word_html(loaded_parms, jinja_template_variables, body_inner_html, num_warning_messages)
+    # * Output:
+    #   * jinja_template_variables : the document-text's HTML is added, with the fixes applied
+    return_value, num_warning_messages = fix_word_html.fix_word_html(loaded_parms, 
+                                            jinja_template_variables, body_inner_html, 
+                                            num_warning_messages)
     if (return_value == 1):
         return 1, num_warning_messages
 
@@ -205,7 +184,7 @@ def create_web_page_core(parameter_file_path: str,
     ################
     # Create the output WWN web-page
     ################
-    # The web-page is created from the Jinja template and template-variables.
+    # The web-page is created from the Jinja template and the template-variables.
     print("INFO.  Generating the output HTML, using the HTML-template.")
     generated_html = jinja_template.render(jinja_template_variables)
 
@@ -226,18 +205,17 @@ def create_web_page_core(parameter_file_path: str,
           str(num_warning_messages))
 
     return 0, num_warning_messages
+
 # END of: create_web_page_core()
 
 
-'''
-###########################
-Function: create_web_page()
-
-* create_web_page() is a wrapper for calling create_web_page_core().
-* This wrapper makes it possible for create_web_page_core() to simply return if it encounters any errors.
-###########################
-'''
 def create_web_page(parameter_file_path):
+    '''
+    * Description:
+      * A wrapper function for calling create_web_page_core().
+      * This wrapper makes it possible for create_web_page_core() 
+        to simply return if it encounters any errors.
+    '''    
     num_warning_messages = 0
     
     # Check Python version 3
@@ -269,24 +247,25 @@ def create_web_page(parameter_file_path):
     return return_value, num_warning_messages
 # END OF: create_web_page()
 
-'''
-################
-Function:  create_arg_parser()
-################
-* Creates and returns the ArgumentParser object
-* Argparse is used to process the command-line argument 
-  * Argparse docs: https://docs.python.org/3/library/argparse.html
-  * The argparse code here is from:  https://stackoverflow.com/questions/14360389/getting-file-path-from-command-line-argument-in-python/47324233
-'''
+
 def create_arg_parser():
+    '''
+    * Description:
+      * Argparse is used to process the command-line argument     
+      * Creates and returns the ArgumentParser object
+
+    * References
+      * Argparse docs: https://docs.python.org/3/library/argparse.html
+      * The argparse code here is from:  https://stackoverflow.com/questions/14360389/getting-file-path-from-command-line-argument-in-python/47324233
+    '''    
     parser = argparse.ArgumentParser(description=
         'Converts a Word HTML-file to a usable web-page.')
     # * One positional argument, and it is optional
-    # * https://stackoverflow.com/questions/4480075/argparse-optional-positional-arguments/31243133
+    #   * https://stackoverflow.com/questions/4480075/argparse-optional-positional-arguments/31243133
     parser.add_argument('parameter_file_path', nargs='?', metavar="<parameter-file-path>",
                     help='Full-path to the parameter-file.')
     return parser
-# END OF:  def create_arg_parser()
+# END OF: create_arg_parser()
 
 '''
 #############
@@ -300,7 +279,7 @@ if __name__ == "__main__":
     parsed_args = arg_parser.parse_args()
     parameter_file_path = parsed_args.parameter_file_path
 
-    # * If a parameter-file-path was not provided on the command-line,
+    # * If a parameter-file path was not provided on the command-line,
     #   then prompt for it
     if parameter_file_path == None:
         prompted_for_parameter_file = True
@@ -316,13 +295,14 @@ if __name__ == "__main__":
     # Create the WWN web-page
     create_web_page(parameter_file_path)
 
-    # If the command-window would close at program exit, then prompt for a key-press:
+    # If the command-window will close at program exit, then prompt for a key-press:
     # * If the program was called by clicking on it, the command window will close 
     #   when the program exits, and the program's messages will not be viewable.
-    # * Determining if the program was called by clicking on it is non-trivial.
-    # * If the program was called by clicking on it, the user will be prompted for
+    # * Prompting for a key-press will ensure the program's messages are viewable.
+    # * However, it is difficult to determine if the program was called by clicking on it.
+    # * If the program was called by clicking on it, the user will have been prompted for
     #   the parameter-file.
-    # * So, check if the user was prompted for the parameter-file.
+    # So, if the user was prompted for the parameter-file, then prompt for a key-press:
     if prompted_for_parameter_file == True:
         print("")
         input("Press any key to exit.")

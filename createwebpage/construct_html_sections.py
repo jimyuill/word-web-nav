@@ -28,42 +28,39 @@ except ImportError as e:
     print("")    
     sys.exit()
 
-'''
-#################
-# Function: construct_html_sections()
-
-Description:
-* For the WWN web-page, constructs these output HTML-sections:
-  * The HTML <head>-section's tags and attributes
-  * The HTML for the web-page header-bar
-  * The HTML for the document-text's trailer
-  * The WWN table-of-contents (TOC), if the input HTML has a TOC
-
-Parameters:
-* loaded_parms : a dictionary with the input parameter-file's contents
-* jinja_template_variables : the jinja-template object
-* head : a BeautifulSoup object that holds the <head> element from the input HTML-file
-* body : a BeautifulSoup object that holds the <body> element from the input HTML-file
-
-Return:
-* 1, None : error
-
-* 0, body_inner_html : OK
-  * The objects returned 
-    * Objects passed as parameters:
-      * loaded_parms : not changed
-      * jinja_template_variables : values added for about 11 keys
-      * head : not changed
-      * body : it just has the <body> opening and closing tags.
-               * The HTML between those tags is removed.
-    * body_inner_html
-      * The HTML from the <body> section in Word's HTML,
-        but with these parts removed:
-        * <body> opening and closing tags
-        * The table-of-contents
-#################
-'''
 def construct_html_sections(loaded_parms, jinja_template_variables, head, body):
+    '''
+    Description:
+    * For the WWN web-page, constructs these output HTML-sections:
+      * The HTML <head>-section's tags and attributes
+      * The HTML for the web-page header-bar
+      * The HTML for the document-text's trailer
+      * The WWN table-of-contents (TOC), if the input HTML has a TOC
+
+    Parameters:
+    * loaded_parms : a dictionary with the input parameter-file's contents
+    * jinja_template_variables : the jinja-template object
+    * head : a BeautifulSoup object that holds the <head> element from the input HTML-file
+    * body : a BeautifulSoup object that holds the <body> element from the input HTML-file
+
+    Return:
+    * 1, None : error
+
+    * 0, body_inner_html : OK
+    * The objects returned 
+        * Objects passed as parameters:
+          * loaded_parms : not changed
+          * jinja_template_variables : values added for about 11 keys
+          * head : not changed
+          * body : it just has the <body> opening and closing tags.
+                   * The HTML between those tags is removed.
+                   
+        * body_inner_html
+          * The HTML from the <body> section in Word's HTML,
+            but with these parts removed:
+            * <body> opening and closing tags
+            * The table-of-contents
+    '''
 
     '''
     ##################
@@ -72,6 +69,7 @@ def construct_html_sections(loaded_parms, jinja_template_variables, head, body):
     '''
     
     # Text added to the generated HTML
+    #
     # * For the web-page header-bar, specifies the separator between
     #   breadcrumbs, e.g., the " / " in:  Home / Topic-1 / Topic-1.1 
     BREAD_CRUMB_SEPARATOR = " / "
@@ -541,9 +539,6 @@ def construct_html_sections(loaded_parms, jinja_template_variables, head, body):
     # Jinja will be used to put toc_html in the output HTML
     jinja_template_variables['table_of_contents'] = toc_html
 
-    ############
-    # Return
-    ############
     return 0, body_inner_html
 
 # END OF: construct_html_sections()

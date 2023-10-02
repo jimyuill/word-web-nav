@@ -34,22 +34,19 @@ except ImportError as e:
     sys.exit()
 
 
-'''
-################
-# Function: load_html_files()
-
-Description:
-* Open the jinja template-file, and create a jinja-template object
-* Open the input Word-HTML-file, and load it into Beautiful Soup objects
-* Create and open the output HTML-file
-
-Return:
-* 1, None : Error
-* 1, returned_objects_dict : Returns a dictionary with the objects that were created.
-                             Specified at the end of this function.
-################
-'''
 def load_html_files(loaded_parms):
+    '''
+    Description:
+    * Open the jinja template-file, and create a jinja-template object
+    * Open the input Word-HTML-file, and load it into Beautiful Soup objects
+    * Create and open the output HTML-file
+
+    Return:
+    * 1, None : Error
+    * 1, returned_objects_dict : Returns a dictionary with the objects that were created.
+                                Specified at the end of this function.
+    ################
+    '''
 
     # Name of WWN's jinja-template file
     # * It's in the same directory as the present file.
@@ -247,4 +244,4 @@ def load_html_files(loaded_parms):
 
     return 0, returned_objects_dict
 
-# END of:  def load_html_files()
+# END of: load_html_files()
