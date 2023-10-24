@@ -1,0 +1,5 @@
+# Store Word docs as binary
+# * https://stackoverflow.com/questions/30728630/what-should-i-do-if-i-put-ms-office-e-g-docx-or-openoffice-e-g-odt-docum
+# * https://stackoverflow.com/questions/18331048/how-to-create-a-git-attributes-file
+*.docx binary
+*.docm binary
