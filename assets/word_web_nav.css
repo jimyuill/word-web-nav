@@ -12,6 +12,9 @@ The CSS uses the jQuery and jQuery UI libraries.
 * The system documentation has additional info on its: installation, use, design 
   and implementation (code).
 
+* Coding issue to look into:
+  * See below, "Using CSS pixel-inches to size the screen:"
+
 MIT License, Copyright (c) 2021-present Jim Yuill
 
 */
@@ -199,10 +202,10 @@ https://stackoverflow.com/questions/49957813/percents-rounding-for-element-width
        * Height:  The container's full height, minus the padding-top width
     */
     width: calc(25% - 20px); 
-    height: calc(100% - 10px);  
+    height: calc(100% - 24px);  
 
     /* The padding-area is used to create a space on the left and top */
-    padding-top: 10px;
+    padding-top: 24px;  /* Use 1/4" top margin, based on CSS pixel-inch of 96px. 96/4=24 */
     padding-left: 20px;
     padding-bottom: 0px;
     padding-right: 0px;
@@ -281,21 +284,21 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
     /* Specify the content-area's width:
        * 75%: the container's total-width minus the table-of-contents' total width.
        * 12px: the splitter-bar's total-width
-       * 20px + 20px: the width of the document's padding-right and padding-left
+       * 48px + 48px: the width of the document's padding-right and padding-left
        * 2px: the document's border-right-width
        
        A negative width is possible, for a very skinny browser window.
        * If this occurs, the web-page's javascript will set this width to 0px.       
     */
-    width: calc(75% - (12px + 20px + 20px + 2px)); 
+    width: calc(75% - (12px + 48px + 48px + 2px)); 
 
-    /* Specify the content-area's height.  It's the same as the table-of-contents height. */
-    height: calc(100% - 10px);
+    /* Specify the content-area's height. */
+    height: calc(100% - 48px); /* 48px gives a half-inch (in CSS pixel-inches) top margin */
     
-    padding-top: 10px;
-    padding-right: 20px;
+    padding-top: 48px;
+    padding-right: 48px; /* 48px gives a half-inch (in CSS pixel-inches) margin */
     padding-bottom: 0px;
-    padding-left: 20px;
+    padding-left: 48px;
 	
     border-width: 0px;
 	border-right-width: 2px;  /* Thin black vertical line */
@@ -308,12 +311,28 @@ https://developer.mozilla.org/en-US/docs/Web/CSS/overflow
        * MS Word's HTML does not limit the text's line-length. 
          * So, by default, text lines can be as wide as the whole content-area 
          * For a wide browser-window, such long text-lines are difficult to read.
-       * max-width is used here to limit the text's line-length to be no more than 960px.
+       * max-width is used here to limit the text's line-length to be no more than 720px.
        * For pictures, their displayed width is not limited by max-width.
-       * However, if a picture is more than 960px, a horizontal scroll-bar is provided
-         to see the whole image.         
+       * However, if a picture is more than 720px, a horizontal scroll-bar is provided
+         to see the whole image.
+         
+       * Use a width comparable to 8.5"-wide paper.
+       * The calculations here are in CSS pixel-inches, which is 96px.
+       * The side margins are 1/2" (see above).
+       8.5"-.5"-.5" = 7.5"
+       7.5 * 96 = 720px       
+
+       * Using CSS pixel-inches to size the screen:
+         * I'm not sure if my use of CSS pixel-inches is the correct way to size the screen 
+           and this section.
+         * Sources to look-into about this:
+           * https://hacks.mozilla.org/2013/09/css-length-explained/
+           * https://www.freecodecamp.org/news/css-unit-guide
+           * https://stackoverflow.com/questions/3341485/how-to-make-a-html-page-in-a4-paper-size-pages
+           * https://developer.mozilla.org/en-US/docs/Web/CSS/@page/size
+       
     */
-	max-width: 960px; 
+	max-width: 720px; 
     
     /* Sroll-bars
     */
