@@ -14,8 +14,8 @@ workspace.code-workspace
 
 # MS Word artifacts
 *.wbk
-Backup of *.wbk
 ~$*.docx
+~$*.docm
 ~*.tmp
 
 
