@@ -71,7 +71,7 @@ $(window).on('load', function() {
         documentLeft = tocTotalWidth + 12,
         
         /* For the document div, this is comparable to the CSS calculation in: 
-           * width: calc(75% - (12px + 20px + 20px + 2px));         
+           * width: calc(75% - (12px + 48px + 48px + 2px));         
            In addition, the size is corrected to not be negative
         */
         documentWidth = Math.max(0, ((totalWidth - tocTotalWidth) - (12 + 48 + 48 + 2)));
