@@ -74,7 +74,7 @@ $(window).on('load', function() {
            * width: calc(75% - (12px + 20px + 20px + 2px));         
            In addition, the size is corrected to not be negative
         */
-        documentWidth = Math.max(0, ((totalWidth - tocTotalWidth) - (12 + 20 + 20 + 2)));
+        documentWidth = Math.max(0, ((totalWidth - tocTotalWidth) - (12 + 48 + 48 + 2)));
 
     /* Set the new values, for the CSS IDs and declarations
     */
@@ -134,7 +134,7 @@ $(function(){
                    in the CSS file
                    * Math.max(0, ...) ensures the tocWidth is not negative
                 */
-                documentWidth = Math.max(0, ((totalWidth - tocTotalWidth) - (12 + 20 + 20 + 2)))
+                documentWidth = Math.max(0, ((totalWidth - tocTotalWidth) - (12 + 48 + 48 + 2)))
             ; // END OF: var section
 
             /* Set the new values, for the CSS IDs and declarations
@@ -159,7 +159,7 @@ $(function(){
             offset.top,
             
             // Right-side boundary for the splitter-bar             
-            (totalWidth - (12 + 20 + 20 + 2)),  // Left-position. Prevent documentWidth from becoming negative
+            (totalWidth - (12 + 48 + 48 + 2)),  // Left-position. Prevent documentWidth from becoming negative
             offset.top
             ],
         
